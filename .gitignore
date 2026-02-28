@@ -1,0 +1,49 @@
+# =========================
+# 1. API Keys & Secrets (CRITICAL)
+# =========================
+# Never commit your Nessie API keys!
+.env
+secrets.json
+config.ini
+
+# =========================
+# 2. Python Environments & Cache
+# =========================
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# 3. Project Output & Data
+# =========================
+# Ignore the generated Excel reports to prevent merge conflicts
+*.xlsx
+*.csv
+reports/
+output/
+
+# Ignore local AI model weights (if you download any .gguf files directly)
+*.gguf
+*.bin
+models/
+
+# =========================
+# 4. OS & IDE Specific Files
+# =========================
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# VS Code & JetBrains
+.vscode/
+.idea/
+*.swp
