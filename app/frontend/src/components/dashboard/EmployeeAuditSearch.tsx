@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { UserDTO } from "@/types/user";
+import { api } from "@/lib/api";
 
 export default function EmployeeAuditSearch() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserDTO[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,38 +17,50 @@ export default function EmployeeAuditSearch() {
 
     setIsSearching(true);
     setSelectedUserId(null); // Reset selection
+    setError(null);
 
-    // Simulate backend call
-    setTimeout(() => {
-      // Dummy data
-      const results: UserDTO[] = [
-        {
-          id: "101",
-          name: "Sarah Connor",
-          email: "sarah.connor@example.com",
-          avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-        },
-        {
-          id: "102",
-          name: "John Smith",
-          email: "john.smith@example.com",
-          avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-        },
-        {
-          id: "103",
-          name: "Emily Chen",
-          email: "emily.chen@example.com",
-          avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
-        },
-      ].filter(
-        (u) =>
-          u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          u.email.toLowerCase().includes(searchQuery.toLowerCase()),
+    try {
+      const { employees } = await api.searchCustomers(searchQuery);
+      setSearchResults(
+        employees.map((emp) => ({
+          id: emp.customer_id,
+          name: emp.name,
+          email: `${emp.name.split(" ")[0].toLowerCase()}@example.com`,
+          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`,
+        })),
       );
-
-      setSearchResults(results);
+    } catch (err: any) {
+      console.error("Failed to search customers", err);
+      setError(
+        err.message || "Failed to search for employees. Please try again.",
+      );
+      setSearchResults([]);
+    } finally {
       setIsSearching(false);
-    }, 600);
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    setIsSearching(true);
+    setSelectedUserId(null);
+    setError(null);
+    try {
+      const { employees } = await api.getCustomers();
+      setSearchResults(
+        employees.map((emp) => ({
+          id: emp.customer_id,
+          name: emp.name,
+          email: `${emp.name.split(" ")[0].toLowerCase()}@example.com`,
+          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`,
+        })),
+      );
+    } catch (err: any) {
+      console.error("Failed to fetch all customers", err);
+      setError(err.message || "Failed to fetch employees. Please try again.");
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -93,12 +107,20 @@ export default function EmployeeAuditSearch() {
             <input
               id="search"
               type="text"
-              className="block w-full pl-11 pr-28 py-3.5 border border-zinc-200 rounded-xl leading-5 bg-zinc-50/50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white sm:text-sm transition-all"
+              className="block w-full pl-11 pr-[200px] py-3.5 border border-zinc-200 rounded-xl leading-5 bg-zinc-50/50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white sm:text-sm transition-all"
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="absolute inset-y-0 right-0 p-1.5 flex">
+            <div className="absolute inset-y-0 right-0 p-1.5 flex gap-2">
+              <button
+                type="button"
+                onClick={fetchAllUsers}
+                disabled={isSearching}
+                className="inline-flex items-center px-4 py-2 border border-zinc-200 text-sm font-medium rounded-lg shadow-sm text-zinc-700 bg-white hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Fetch All
+              </button>
               <button
                 type="submit"
                 disabled={isSearching || !searchQuery.trim()}
@@ -134,6 +156,25 @@ export default function EmployeeAuditSearch() {
 
         {/* Results Area */}
         <div className="flex-grow flex flex-col">
+          {error && (
+            <div className="mb-4 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 flex items-start gap-3">
+              <svg
+                className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
+
           <div className="mb-3 text-sm font-medium text-zinc-500 px-1 flex items-center justify-between">
             <span>
               {searchResults.length > 0
@@ -168,7 +209,7 @@ export default function EmployeeAuditSearch() {
                   </svg>
                 </div>
                 <p className="text-zinc-500 text-sm">
-                  Enter a name or email to find employees to audit.
+                  Enter a name or click Fetch All to find employees to audit.
                 </p>
                 <p className="text-zinc-400 text-xs mt-1">
                   Try searching for "John" or "Sarah"
