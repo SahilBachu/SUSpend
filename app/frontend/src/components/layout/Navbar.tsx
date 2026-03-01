@@ -9,11 +9,11 @@ type NavbarProps = {
 
 export default function Navbar({ user }: NavbarProps) {
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-zinc-100 bg-white/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 w-full border-b shadow-sm border-zinc-100 bg-white/80 backdrop-blur-md py-3 sm:py-4 lg:py-6">
       <div className="mx-auto flex h-16 max-w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left side: Greeting */}
         <div className="flex items-center gap-4">
-          <h1 className="text-6xl font-semibold text-zinc-900">
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-semibold text-zinc-900">
             Hello, <span className="text-indigo-600">{user.name}</span>
           </h1>
         </div>
