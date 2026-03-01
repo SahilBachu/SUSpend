@@ -240,6 +240,19 @@ def get_customers():
     return nessie_get("/enterprise/customers")
 
 
+def get_merchants():
+    try:
+        merchants = nessie_get("/merchants")
+        if merchants:
+            return merchants
+    except requests.RequestException:
+        pass
+    try:
+        return nessie_get("/enterprise/merchants")
+    except requests.RequestException:
+        return []
+
+
 def get_customer_accounts(customer_id: str):
     try:
         accounts = nessie_get(f"/customers/{customer_id}/accounts")
@@ -765,6 +778,22 @@ def audit_run():
             ticket_override_applied_count,
             customer_id,
         )
+
+    # Map merchant_id to location
+    try:
+        merchants = get_merchants()
+        merchant_map = {m.get("_id"): m.get("name", "Unknown") for m in merchants} if merchants else {}
+    except Exception as e:
+        logger.warning("Could not fetch merchants for location mapping: %s", e)
+        merchant_map = {}
+
+    tx_map = {t.get("transaction_id"): t for t in transactions}
+    for r in report.audit_results:
+        tx = tx_map.get(r.transaction_id)
+        if tx and tx.get("merchant_id"):
+            r.location = merchant_map.get(tx.get("merchant_id"), "Unknown Location")
+        else:
+            r.location = "Unknown Location"
 
     return jsonify(
         {

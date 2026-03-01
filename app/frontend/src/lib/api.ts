@@ -46,6 +46,7 @@ export interface PolicyRole {
 
 export interface AuditResult {
   transaction_id: string;
+  location: string;
   risk_level: string;
   category?: string;
   over_budget_amount?: number;

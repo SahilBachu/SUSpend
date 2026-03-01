@@ -24,6 +24,7 @@ class AuditResult(BaseModel):
     """A single transaction's audit finding."""
 
     transaction_id: str
+    location: str = "Unknown"
     risk_level: str = Field(..., pattern=r"^(high|medium|low)$")
     category: str = "Uncategorized"
     over_budget_amount: float = 0.0
