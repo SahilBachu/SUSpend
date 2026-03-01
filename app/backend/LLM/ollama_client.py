@@ -191,6 +191,7 @@ def call_llama(
     user_prompt: str,
     schema: dict[str, Any],
     model: str = "llama3",
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """
     Send a structured audit prompt to the local llama3 model.
@@ -203,6 +204,7 @@ def call_llama(
         user_prompt:   User-role message (transaction data).
         schema:        JSON Schema dict constraining the LLM output format.
         model:         Ollama model tag (default: 'llama3').
+        **kwargs:      Optional model options (e.g. num_predict for longer output).
 
     Returns:
         Parsed dict from the model's JSON response.
@@ -227,6 +229,7 @@ def call_llama(
         system=system_prompt,
         format=schema,
         temperature=0,
+        **kwargs,
     )
     elapsed = time.perf_counter() - start
 
