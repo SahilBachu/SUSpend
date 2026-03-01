@@ -22,7 +22,7 @@ body {
 
 @layer components {
   .login-container {
-    @apply flex bg-[#1B264F] px-4 py-12 sm:px-6 lg:px-8 items-center justify-center min-h-[calc(100vh-4rem)];
+    @apply flex bg-[#4F46E5]py-12 sm:px-6 lg:px-8 items-center justify-center min-h-[calc(100vh-4rem)];
   }
 
   .login-card {
