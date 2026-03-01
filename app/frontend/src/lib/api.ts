@@ -56,6 +56,7 @@ export interface AuditResult {
 export interface AuditResponse {
   status: string;
   customer_id: string;
+  policy_role?: string;
   audit_results: AuditResult[];
   summary: string;
   high_risk_count: number;

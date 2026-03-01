@@ -4,13 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, Employee } from "@/lib/api";
 
-interface EmployeeAuditSearchProps {
-  policyText?: string | null;
-}
-
-export default function EmployeeAuditSearch({
-  policyText = null,
-}: EmployeeAuditSearchProps) {
+export default function EmployeeAuditSearch() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Employee[]>([]);
@@ -60,13 +54,12 @@ export default function EmployeeAuditSearch({
   };
 
   const handleBeginAudit = async () => {
-    if (!selectedEmployee || !policyText) return;
+    if (!selectedEmployee) return;
     setIsAuditing(true);
     setError(null);
     try {
       const response = await api.runAudit({
         customer_id: selectedEmployee.customer_id,
-        policy_text: policyText,
       });
       sessionStorage.setItem(
         "audit_results",
@@ -287,20 +280,18 @@ export default function EmployeeAuditSearch({
         {/* Action Area */}
         <div className="mt-8 pt-5 border-t border-zinc-100 flex items-center justify-between dark:border-zinc-800">
           <div className="text-sm text-zinc-500 dark:text-zinc-400">
-            {!policyText ? (
-              "Select a policy (left) to enable audit"
-            ) : selectedEmployee ? (
+            {selectedEmployee ? (
               <span className="flex items-center text-indigo-600 dark:text-indigo-300">
                 <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
                 {selectedEmployee.name} selected
               </span>
             ) : (
-              "Select an employee to continue"
+              "Select an employee to continue (policy is auto-selected by role)"
             )}
           </div>
           <button
             type="button"
-            disabled={!selectedEmployee || !policyText || isAuditing}
+            disabled={!selectedEmployee || isAuditing}
             onClick={handleBeginAudit}
             className="relative inline-flex items-center overflow-hidden px-6 py-2.5 border border-indigo-500/80 text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-[0_8px_20px_rgba(79,70,229,0.35)] hover:shadow-[0_10px_24px_rgba(79,70,229,0.5)] before:absolute before:inset-x-0 before:top-0 before:h-1/2 before:bg-gradient-to-b before:from-white/40 before:to-transparent before:pointer-events-none disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:shadow-none disabled:before:from-transparent disabled:cursor-not-allowed transition-all dark:focus:ring-offset-zinc-900 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 dark:disabled:border-zinc-700"
           >

@@ -3,15 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, PolicyRole } from "@/lib/api";
 
-interface PolicyViewerProps {
-  selectedRole?: string | null;
-  onSelectPolicy?: (role: string, policyText: string) => void;
-}
-
-export default function PolicyViewer({
-  selectedRole = null,
-  onSelectPolicy,
-}: PolicyViewerProps) {
+export default function PolicyViewer() {
   const [policies, setPolicies] = useState<{
     [key: string]: PolicyRole;
   } | null>(null);
@@ -89,29 +81,21 @@ export default function PolicyViewer({
           <div className="space-y-6">
             <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100 dark:bg-indigo-950/30 dark:border-indigo-900/60">
               <p className="text-sm font-medium text-indigo-900 mb-3 dark:text-indigo-200">
-                Select policy for audit (required):
+                Policy is selected automatically by employee role:
               </p>
               <div className="flex flex-wrap gap-2">
                 {Object.keys(policies).map((role) => (
-                  <button
+                  <span
                     key={role}
-                    type="button"
-                    onClick={() => onSelectPolicy?.(role, policies[role].policy)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      selectedRole === role
-                        ? "bg-indigo-600 text-white"
-                        : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700 dark:hover:bg-zinc-700"
-                    }`}
+                    className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
                   >
                     {role}
-                  </button>
+                  </span>
                 ))}
               </div>
-              {selectedRole && (
-                <p className="text-xs text-indigo-600 mt-2 dark:text-indigo-300">
-                  Using {policies[selectedRole].title} for audits
-                </p>
-              )}
+              <p className="text-xs text-indigo-600 mt-2 dark:text-indigo-300">
+                Role mapping is defined in backend data and applied when you click Begin Audit.
+              </p>
             </div>
 
             <p className="leading-relaxed text-base text-zinc-700 dark:text-zinc-300">

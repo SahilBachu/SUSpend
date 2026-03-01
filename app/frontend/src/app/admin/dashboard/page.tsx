@@ -8,10 +8,6 @@ import EmployeeAuditSearch from "@/components/dashboard/EmployeeAuditSearch";
 
 export default function Page() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [selectedPolicy, setSelectedPolicy] = useState<{
-    role: string;
-    policyText: string;
-  } | null>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("admin-theme");
@@ -42,13 +38,8 @@ export default function Page() {
       />
       <main className="mx-auto max-w-7xl px-6 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <PolicyViewer
-            selectedRole={selectedPolicy?.role ?? null}
-            onSelectPolicy={(role, policyText) =>
-              setSelectedPolicy({ role, policyText })
-            }
-          />
-          <EmployeeAuditSearch policyText={selectedPolicy?.policyText ?? null} />
+          <PolicyViewer />
+          <EmployeeAuditSearch />
         </div>
       </main>
     </div>

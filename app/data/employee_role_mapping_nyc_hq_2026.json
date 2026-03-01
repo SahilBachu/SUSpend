@@ -1,0 +1,16 @@
+{
+  "customer_id_roles": {},
+  "employee_name_roles": {
+    "John Smith": "Associate",
+    "Sarah Johnson": "Associate",
+    "Michael Chen": "Associate",
+    "Emily Williams": "Manager",
+    "David Brown": "Manager",
+    "Jessica Martinez": "VP",
+    "Robert Taylor": "Associate",
+    "Laura Anderson": "VP",
+    "James Wilson": "Manager",
+    "Patricia Davis": "Associate",
+    "Alex Johnson": "VP"
+  }
+}

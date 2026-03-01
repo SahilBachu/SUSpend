@@ -36,10 +36,14 @@ logger = logging.getLogger(__name__)
 NESSIE_API_KEY = os.getenv("NESSIE_API_KEY")
 NESSIE_BASE_URL = os.getenv("NESSIE_BASE_URL", "http://api.nessieisreal.com")
 REQUEST_TIMEOUT_SECONDS = 15 
+VALID_POLICY_ROLES = {"Associate", "Manager", "VP"}
 
 # Path to policy JSON (app/data/suspend_policy_nyc_hq_2026.json)
 POLICY_FILE_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..", "data", "suspend_policy_nyc_hq_2026.json"
+)
+ROLE_MAPPING_FILE_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "data", "employee_role_mapping_nyc_hq_2026.json"
 )
 
 DEFAULT_POLICY = (
@@ -50,6 +54,71 @@ DEFAULT_POLICY = (
     "Flag duplicate charges: same merchant, similar amount, within 7 days. "
     "Flag smurfing: multiple purchases just below the $50 receipt threshold from the same merchant."
 )
+
+
+def load_policies() -> dict:
+    try:
+        with open(POLICY_FILE_PATH, encoding="utf-8") as f:
+            policies = json.load(f)
+    except FileNotFoundError as exc:
+        raise ValueError("Policy file not found") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError("Invalid policy file") from exc
+
+    for role in VALID_POLICY_ROLES:
+        if role not in policies:
+            raise ValueError(
+                f"Policy file missing role '{role}'. Expected roles: {sorted(VALID_POLICY_ROLES)}"
+            )
+    return policies
+
+
+def load_employee_role_mapping() -> tuple[dict[str, str], dict[str, str]]:
+    try:
+        with open(ROLE_MAPPING_FILE_PATH, encoding="utf-8") as f:
+            role_map = json.load(f)
+    except FileNotFoundError as exc:
+        raise ValueError("Employee role mapping file not found") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError("Invalid employee role mapping file") from exc
+
+    customer_id_roles = role_map.get("customer_id_roles") or {}
+    employee_name_roles = role_map.get("employee_name_roles") or {}
+
+    normalized_name_roles = {}
+    for name, role in employee_name_roles.items():
+        if not isinstance(name, str) or not isinstance(role, str):
+            continue
+        normalized_name_roles[name.strip().lower()] = role.strip()
+
+    for role in list(customer_id_roles.values()) + list(normalized_name_roles.values()):
+        if role not in VALID_POLICY_ROLES:
+            raise ValueError(
+                f"Unknown role in mapping file: {role}. Allowed roles: {sorted(VALID_POLICY_ROLES)}"
+            )
+
+    return customer_id_roles, normalized_name_roles
+
+
+def get_customer_name_by_id(customer_id: str) -> str | None:
+    customers = get_customers()
+    for customer in customers:
+        if str(customer.get("_id")) == customer_id:
+            return normalize_full_name(customer)
+    return None
+
+
+def resolve_policy_role(customer_id: str) -> tuple[str | None, str | None]:
+    customer_id_roles, employee_name_roles = load_employee_role_mapping()
+    role = customer_id_roles.get(customer_id)
+    employee_name = None
+
+    if not role:
+        employee_name = get_customer_name_by_id(customer_id)
+        if employee_name:
+            role = employee_name_roles.get(employee_name.strip().lower())
+
+    return role, employee_name
 
 
 def missing_api_key():
@@ -234,14 +303,10 @@ def get_policy():
         500 if policy file missing or invalid
     """
     try:
-        with open(POLICY_FILE_PATH, encoding="utf-8") as f:
-            policies = json.load(f)
-    except FileNotFoundError:
-        logger.error("Policy file not found: %s", POLICY_FILE_PATH)
-        return jsonify({"error": "Policy file not found"}), 500
-    except json.JSONDecodeError as exc:
-        logger.error("Invalid policy JSON: %s", exc)
-        return jsonify({"error": "Invalid policy file"}), 500
+        policies = load_policies()
+    except ValueError as exc:
+        logger.error("Policy load error: %s", exc)
+        return jsonify({"error": str(exc)}), 500
 
     role = request.args.get("role", "").strip()
     if role:
@@ -481,12 +546,59 @@ def audit_run():
     if not customer_id:
         return jsonify({"error": "Missing required field: customer_id"}), 400
 
-    policy_text = (body.get("policy_text") or "").strip() or DEFAULT_POLICY
+    policy_text = (body.get("policy_text") or "").strip()
     fraud_focus = bool(body.get("fraud_focus", True))
+    policy_role = "custom"
 
     logger.info(
         "POST /audit/run | customer_id=%s | fraud_focus=%s", customer_id, fraud_focus
     )
+
+    if not policy_text:
+        try:
+            policies = load_policies()
+            policy_role, employee_name = resolve_policy_role(customer_id)
+        except ValueError as exc:
+            logger.error("Policy/role mapping error: %s", exc)
+            return jsonify({"error": str(exc)}), 500
+        except requests.RequestException as error:
+            return (
+                jsonify(
+                    {
+                        "error": "Could not fetch employees for role mapping",
+                        "customer_id": customer_id,
+                        "details": str(error),
+                    }
+                ),
+                502,
+            )
+
+        if policy_role:
+            policy_data = policies.get(policy_role) or {}
+            policy_text = (policy_data.get("policy") or "").strip()
+            if not policy_text:
+                return (
+                    jsonify(
+                        {
+                            "error": f"Policy text missing for mapped role '{policy_role}'",
+                            "customer_id": customer_id,
+                        }
+                    ),
+                    500,
+                )
+            logger.info(
+                "POST /audit/run | auto-selected role=%s | employee_name=%s | customer_id=%s",
+                policy_role,
+                employee_name or "unknown",
+                customer_id,
+            )
+        else:
+            policy_text = DEFAULT_POLICY
+            policy_role = "default"
+            logger.warning(
+                "POST /audit/run | no role mapping found, falling back to DEFAULT_POLICY | customer_id=%s",
+                customer_id,
+            )
 
     # ------------------------------------------------------------------
     # Fetch transactions (same logic as GET /employees/<id>/transactions)
@@ -564,6 +676,7 @@ def audit_run():
         {
             "status": "success",
             "customer_id": customer_id,
+            "policy_role": policy_role,
             "audit_results": [r.model_dump() for r in report.audit_results],
             "summary": report.summary,
             **counts,
