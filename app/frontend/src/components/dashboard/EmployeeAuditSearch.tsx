@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, Employee } from "@/lib/api";
 
-export default function EmployeeAuditSearch() {
+interface EmployeeAuditSearchProps {
+  policyText?: string | null;
+}
+
+export default function EmployeeAuditSearch({
+  policyText = null,
+}: EmployeeAuditSearchProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Employee[]>([]);
@@ -50,11 +56,14 @@ export default function EmployeeAuditSearch() {
   };
 
   const handleBeginAudit = async () => {
-    if (!selectedEmployee) return;
+    if (!selectedEmployee || !policyText) return;
     setIsAuditing(true);
     setError(null);
     try {
-      const response = await api.runAudit({ customer_id: selectedEmployee.customer_id });
+      const response = await api.runAudit({
+        customer_id: selectedEmployee.customer_id,
+        policy_text: policyText,
+      });
       sessionStorage.setItem(
         "audit_results",
         JSON.stringify({ ...response, employee_name: selectedEmployee.name }),
@@ -272,7 +281,9 @@ export default function EmployeeAuditSearch() {
         {/* Action Area */}
         <div className="mt-8 pt-5 border-t border-zinc-100 flex items-center justify-between">
           <div className="text-sm text-zinc-500">
-            {selectedEmployee ? (
+            {!policyText ? (
+              "Select a policy (left) to enable audit"
+            ) : selectedEmployee ? (
               <span className="flex items-center text-indigo-600">
                 <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
                 {selectedEmployee.name} selected
@@ -283,7 +294,7 @@ export default function EmployeeAuditSearch() {
           </div>
           <button
             type="button"
-            disabled={!selectedEmployee || isAuditing}
+            disabled={!selectedEmployee || !policyText || isAuditing}
             onClick={handleBeginAudit}
             className="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:cursor-not-allowed transition-all"
           >

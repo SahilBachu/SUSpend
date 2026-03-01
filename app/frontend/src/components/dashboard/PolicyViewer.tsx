@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { api, PolicyRole } from "@/lib/api";
 
-export default function PolicyViewer() {
+interface PolicyViewerProps {
+  selectedRole?: string | null;
+  onSelectPolicy?: (role: string, policyText: string) => void;
+}
+
+export default function PolicyViewer({
+  selectedRole = null,
+  onSelectPolicy,
+}: PolicyViewerProps) {
   const [policies, setPolicies] = useState<{
     [key: string]: PolicyRole;
   } | null>(null);
@@ -79,6 +87,33 @@ export default function PolicyViewer() {
 
         {!loading && !error && policies && (
           <div className="space-y-6">
+            <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+              <p className="text-sm font-medium text-indigo-900 mb-3">
+                Select policy for audit (required):
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(policies).map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => onSelectPolicy?.(role, policies[role].policy)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedRole === role
+                        ? "bg-indigo-600 text-white"
+                        : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50"
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+              {selectedRole && (
+                <p className="text-xs text-indigo-600 mt-2">
+                  Using {policies[selectedRole].title} for audits
+                </p>
+              )}
+            </div>
+
             <p className="leading-relaxed text-base">
               Employees are expected to exercise good judgment and discretion
               when incurring business expenses. Policies vary based on the

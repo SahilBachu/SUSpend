@@ -265,9 +265,11 @@ Write a clear, professional email that:
 
 TONE: Professional, respectful, and direct. Not accusatory. Help the employee understand what was found.
 
+CRITICAL: The email_body field MUST be a complete, multi-paragraph email. It must NOT be empty. Write at least 2-3 paragraphs covering the audit summary, flagged items, and next steps.
+
 OUTPUT: Return a JSON object with exactly:
 - "email_subject": A short, professional subject line (e.g. "Expense Audit Results - Action Required" or "Expense Audit Summary").
-- "email_body": The full email body as plain text. Use line breaks for readability. No HTML."""
+- "email_body": The full email body as plain text. Use line breaks (\\n) for readability. No HTML. Must be substantial (multiple paragraphs)."""
 
 
 def build_email_user_prompt(
@@ -293,4 +295,4 @@ def build_email_user_prompt(
 AUDIT RESULTS (each transaction with risk level and finding):
 {audit_json}
 
-Generate an email to {employee_name} summarizing these audit results. Separate suspicious (high/medium risk) from valid (low risk) transactions and explain each clearly. Return only valid JSON with email_subject and email_body."""
+Generate an email to {employee_name} summarizing these audit results. Separate suspicious (high/medium risk) from valid (low risk) transactions and explain each clearly. The email_body must be a complete multi-paragraph email (at least 2-3 paragraphs)—do NOT leave it empty. Return only valid JSON with email_subject and email_body."""

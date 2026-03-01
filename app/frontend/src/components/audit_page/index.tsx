@@ -200,7 +200,7 @@ export default function AuditPage() {
             <table className="min-w-full divide-y divide-zinc-100">
               <thead className="bg-zinc-50">
                 <tr>
-                  {["Transaction ID", "Risk Level", "Finding", "Policy Violation", "Recommendation", "Status"].map((col) => (
+                  {["Transaction ID", "Risk Level", "Finding", "Policy Violation", "Recommendation"].map((col) => (
                     <th
                       key={col}
                       className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide"
@@ -220,17 +220,6 @@ export default function AuditPage() {
                     <td className="px-4 py-3 text-sm text-zinc-600 max-w-xs">{r.finding}</td>
                     <td className="px-4 py-3 text-sm text-zinc-600 max-w-xs">{r.policy_violation}</td>
                     <td className="px-4 py-3 text-sm text-zinc-600 max-w-xs">{r.recommendation}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {isInvalid(r) ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
-                          Invalid
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                          Valid
-                        </span>
-                      )}
-                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -608,7 +608,12 @@ def audit_email():
     try:
         system_prompt = build_email_system_prompt()
         user_prompt = build_email_user_prompt(employee_name, audit_results, summary)
-        result = call_llama(system_prompt, user_prompt, EMAIL_RESPONSE_SCHEMA)
+        result = call_llama(
+            system_prompt,
+            user_prompt,
+            EMAIL_RESPONSE_SCHEMA,
+            num_predict=1024,
+        )
     except OllamaConnectionError as exc:
         logger.error("Ollama unreachable: %s", exc)
         return jsonify({"error": str(exc)}), 503
@@ -617,7 +622,28 @@ def audit_email():
         return jsonify({"error": f"Email generation failed: {exc}"}), 500
 
     subject = result.get("email_subject", "Expense Audit Summary")
-    body_text = result.get("email_body", "")
+    body_text = (result.get("email_body") or "").strip()
+
+    if not body_text:
+        high_risk = [r for r in audit_results if str(r.get("risk_level", "")).lower() == "high"]
+        medium_risk = [r for r in audit_results if str(r.get("risk_level", "")).lower() == "medium"]
+        body_lines = [
+            f"Dear {employee_name},",
+            "",
+            f"Your expense audit has been completed. {summary}",
+            "",
+        ]
+        if high_risk or medium_risk:
+            body_lines.append("The following transactions require your attention:")
+            for r in high_risk + medium_risk:
+                body_lines.append(f"- {r.get('finding', 'N/A')} (Recommendation: {r.get('recommendation', 'N/A')})")
+            body_lines.extend(["", "Please review and respond to the compliance team.", ""])
+        else:
+            body_lines.extend(["All reviewed transactions were found to be compliant.", ""])
+        body_lines.append("Best regards,")
+        body_lines.append("Compliance Team")
+        body_text = "\n".join(body_lines)
+        logger.info("POST /audit/email | LLM returned empty body, using fallback")
 
     return jsonify({"email_subject": subject, "email_body": body_text})
 
