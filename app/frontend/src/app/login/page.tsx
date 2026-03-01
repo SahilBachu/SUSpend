@@ -1,21 +1,37 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    setError(null);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        router.push("/dashboard");
+        return;
+      }
+      setError(data.error ?? "Invalid credentials");
+    } catch {
+      setError("Invalid credentials");
+    } finally {
       setIsLoading(false);
-      console.log('Login attempt with:', { username, password });
-    }, 1000);
+    }
   };
 
   return (
@@ -80,19 +96,9 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="login-checkbox"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-[#1B264F]">
-                Remember me
-              </label>
-            </div>
-          </div>
+          {error && (
+            <p className="text-sm text-red-600">{error}</p>
+          )}
 
           <div>
             <button
