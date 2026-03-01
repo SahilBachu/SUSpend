@@ -1,0 +1,6 @@
+src/components/audit_page/index.tsx(243,59): error TS18048: 'percent' is possibly 'undefined'.
+src/components/audit_page/index.tsx(250,24): error TS2322: Type '(value: number) => [number, "Transactions"]' is not assignable to type 'Formatter<number, "Transactions"> & ((value: number, name: "Transactions", item: Payload<number, "Transactions">, index: number, payload: Payload<number, "Transactions">[]) => ReactNode | [...])'.
+  Type '(value: number) => [number, "Transactions"]' is not assignable to type 'Formatter<number, "Transactions">'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
