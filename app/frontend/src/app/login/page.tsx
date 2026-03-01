@@ -40,11 +40,11 @@ export default function LoginPage() {
         <div className="text-center">
           <div className="login-icon-wrap flex justify-center">
             <Image
-              src="/Feeling (3).png"
+              src="/Feeling (5).png"
               alt="Logo"
-              width={64}
-              height={64}
-              className="login-icon rounded-full object-cover"
+              width={120}
+              height={120}
+              className="login-icon object-contain"
             />
           </div>
           <h2 className="login-title">
