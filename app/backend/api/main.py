@@ -298,6 +298,7 @@ def build_employee_statement(customer_id: str):
             transaction = {
                 "transaction_id": purchase.get("_id"),
                 "merchant_id": purchase.get("merchant_id"),
+                "type": purchase.get("type"),
                 "amount": purchase.get("amount"),
                 "status": purchase.get("status"),
                 "description": purchase.get("description"),
@@ -462,7 +463,8 @@ def search_employees():
     matches = []
     for customer in customers:
         full_name = normalize_full_name(customer)
-        if query not in full_name.lower():
+        customer_id = str(customer.get("_id", ""))
+        if query not in full_name.lower() and query != customer_id.lower():
             continue
         matches.append(
             {
@@ -512,6 +514,7 @@ def get_employee_transactions(customer_id: str):
                     "account_type": account_type,
                     "transaction_id": purchase.get("_id"),
                     "merchant_id": purchase.get("merchant_id"),
+                    "type": purchase.get("type"),
                     "amount": purchase.get("amount"),
                     "status": purchase.get("status"),
                     "description": purchase.get("description"),
@@ -719,6 +722,7 @@ def audit_run():
                     "account_id": account_id,
                     "account_type": account.get("type"),
                     "merchant_id": purchase.get("merchant_id"),
+                    "type": purchase.get("type"),
                     "amount": purchase.get("amount"),
                     "status": purchase.get("status"),
                     "description": purchase.get("description"),

@@ -1,4 +1,3 @@
-
 /**
  * SUSpend API Client
  *
@@ -31,8 +30,8 @@
  *   Check if Ollama (LLM) is available.
  *   Returns: { status, ollama_running, model }
  */
-const BASE_URL ="http://localhost:5000";
- //const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
+const BASE_URL = "http://localhost:5000";
+//const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface Employee {
@@ -47,6 +46,7 @@ export interface PolicyRole {
 
 export interface AuditResult {
   transaction_id: string;
+  type?: string;
   risk_level: string;
   category?: string;
   over_budget_amount?: number;
@@ -98,18 +98,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   /** GET /employees — list all customers, optionally filtered by exact name */
-  getCustomers(name?: string): Promise<{ count: number; employees: Employee[] }> {
+  getCustomers(
+    name?: string,
+  ): Promise<{ count: number; employees: Employee[] }> {
     const params = name ? `?name=${encodeURIComponent(name)}` : "";
     return request(`/employees${params}`);
   },
 
   /** GET /employees/search?query=<query> */
-  searchCustomers(query: string): Promise<{ query: string; count: number; employees: Employee[] }> {
+  searchCustomers(
+    query: string,
+  ): Promise<{ query: string; count: number; employees: Employee[] }> {
     return request(`/employees/search?query=${encodeURIComponent(query)}`);
   },
 
   /** GET /policy or GET /policy?role=<role> */
-  getPolicy(role?: "Associate" | "Manager" | "VP"): Promise<
+  getPolicy(
+    role?: "Associate" | "Manager" | "VP",
+  ): Promise<
     { Associate: PolicyRole; Manager: PolicyRole; VP: PolicyRole } | PolicyRole
   > {
     const params = role ? `?role=${encodeURIComponent(role)}` : "";
@@ -141,7 +147,11 @@ export const api = {
   },
 
   /** GET /audit/health */
-  getAuditHealth(): Promise<{ status: string; ollama_running: boolean; model: string }> {
+  getAuditHealth(): Promise<{
+    status: string;
+    ollama_running: boolean;
+    model: string;
+  }> {
     return request("/audit/health");
   },
 };

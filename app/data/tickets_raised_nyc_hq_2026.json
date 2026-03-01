@@ -44,6 +44,21 @@
       "createdAt": "2026-03-01T13:04:15.062Z",
       "reviewedAt": "2026-03-01T13:05:23.287Z",
       "reviewedBy": "admin"
+    },
+    {
+      "id": "ticket_1772375375729_qtvqwq",
+      "employeeUserId": "2",
+      "employeeName": "John Smith",
+      "employeeUsername": "john.smith",
+      "nessieId": "69a3c81295150878eaffb5d9",
+      "category": "MONTHLY LIMIT",
+      "overBudgetAmount": 210,
+      "reason": "test",
+      "status": "approved",
+      "adminNote": "I JUST WANT TO TESE THIS.",
+      "createdAt": "2026-03-01T14:29:35.729Z",
+      "reviewedAt": "2026-03-01T14:30:38.741Z",
+      "reviewedBy": "Admin"
     }
   ]
 }

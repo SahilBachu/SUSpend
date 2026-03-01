@@ -31,15 +31,34 @@ export default function TicketsRaisedPanel() {
   const [tickets, setTickets] = useState<TicketRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [reviewChecked, setReviewChecked] = useState<Record<string, boolean>>({});
+  const [reviewChecked, setReviewChecked] = useState<Record<string, boolean>>(
+    {},
+  );
   const [noteByTicket, setNoteByTicket] = useState<Record<string, string>>({});
   const [submittingByTicket, setSubmittingByTicket] = useState<
     Record<string, boolean>
   >({});
+  const [filterStatus, setFilterStatus] = useState<TicketStatus | "all">("all");
 
-  const pendingCount = useMemo(
-    () => tickets.filter((ticket) => ticket.status === "pending").length,
+  const counts = useMemo(
+    () =>
+      tickets.reduce(
+        (acc, ticket) => {
+          acc[ticket.status]++;
+          acc.total++;
+          return acc;
+        },
+        { pending: 0, approved: 0, rejected: 0, total: 0 },
+      ),
     [tickets],
+  );
+
+  const filteredTickets = useMemo(
+    () =>
+      filterStatus === "all"
+        ? tickets
+        : tickets.filter((t) => t.status === filterStatus),
+    [tickets, filterStatus],
   );
 
   async function loadTickets() {
@@ -63,7 +82,10 @@ export default function TicketsRaisedPanel() {
     loadTickets();
   }, []);
 
-  async function reviewTicket(ticketId: string, status: "approved" | "rejected") {
+  async function reviewTicket(
+    ticketId: string,
+    status: "approved" | "rejected",
+  ) {
     const note = (noteByTicket[ticketId] || "").trim();
     if (!reviewChecked[ticketId]) {
       setError("Please check 'Reviewed' before approving or rejecting.");
@@ -100,13 +122,38 @@ export default function TicketsRaisedPanel() {
 
   return (
     <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden dark:bg-zinc-900 dark:border-zinc-800">
-      <div className="px-6 py-5 border-b border-zinc-100 bg-zinc-50/50 flex items-center justify-between dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          Tickets Raised
-        </h3>
-        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-200">
-          {pendingCount} pending
-        </span>
+      <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Tickets Raised
+          </h3>
+          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-200">
+            {filterStatus === "all"
+              ? `${counts.total} tickets, ${counts.approved} approved, ${counts.rejected} rejected, ${counts.pending} pending`
+              : filterStatus === "pending"
+                ? `${counts.pending} pending`
+                : filterStatus === "approved"
+                  ? `${counts.approved} approved`
+                  : `${counts.rejected} rejected`}
+          </span>
+        </div>
+        <div className="flex bg-zinc-200/50 dark:bg-zinc-800/50 p-1 rounded-lg">
+          {(["all", "pending", "approved", "rejected"] as const).map(
+            (status) => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-colors ${
+                  filterStatus === status
+                    ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
+                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                }`}
+              >
+                {status}
+              </button>
+            ),
+          )}
+        </div>
       </div>
 
       <div className="p-6 space-y-4">
@@ -118,12 +165,14 @@ export default function TicketsRaisedPanel() {
           <div className="flex items-center justify-center py-8">
             <div className="h-7 w-7 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
           </div>
-        ) : tickets.length === 0 ? (
+        ) : filteredTickets.length === 0 ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            No tickets have been raised yet.
+            {tickets.length === 0
+              ? "No tickets have been raised yet."
+              : "No tickets found for the selected filter."}
           </p>
         ) : (
-          tickets.map((ticket) => {
+          filteredTickets.map((ticket) => {
             const isPending = ticket.status === "pending";
             const isSubmitting = !!submittingByTicket[ticket.id];
 
@@ -145,7 +194,8 @@ export default function TicketsRaisedPanel() {
 
                 <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
                   <strong>Category:</strong> {ticket.category} &nbsp;•&nbsp;
-                  <strong>Over budget:</strong> ${ticket.overBudgetAmount.toFixed(2)}
+                  <strong>Over budget:</strong> $
+                  {ticket.overBudgetAmount.toFixed(2)}
                 </p>
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
                   {ticket.reason}
@@ -208,7 +258,9 @@ export default function TicketsRaisedPanel() {
                         ? new Date(ticket.reviewedAt).toLocaleString()
                         : "N/A"}
                     </p>
-                    {ticket.adminNote ? <p className="mt-1">Note: {ticket.adminNote}</p> : null}
+                    {ticket.adminNote ? (
+                      <p className="mt-1">Note: {ticket.adminNote}</p>
+                    ) : null}
                   </div>
                 )}
               </div>
@@ -219,4 +271,3 @@ export default function TicketsRaisedPanel() {
     </section>
   );
 }
-

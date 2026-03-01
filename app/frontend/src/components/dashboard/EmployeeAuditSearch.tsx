@@ -118,7 +118,7 @@ export default function EmployeeAuditSearch() {
               id="search"
               type="text"
               className="block w-full pl-11 pr-[200px] py-3.5 border border-zinc-200 rounded-xl leading-5 bg-zinc-50/50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white sm:text-sm transition-all dark:border-zinc-700 dark:bg-zinc-800 dark:placeholder-zinc-500 dark:text-zinc-100 dark:focus:bg-zinc-800"
-              placeholder="Search by name or email..."
+              placeholder="Search by name or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

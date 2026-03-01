@@ -67,7 +67,9 @@ export default function PolicyViewer() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <span className="ml-3 text-zinc-500 dark:text-zinc-400">Loading policies...</span>
+            <span className="ml-3 text-zinc-500 dark:text-zinc-400">
+              Loading policies...
+            </span>
           </div>
         )}
 
@@ -79,25 +81,6 @@ export default function PolicyViewer() {
 
         {!loading && !error && policies && (
           <div className="space-y-6">
-            <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100 dark:bg-indigo-950/30 dark:border-indigo-900/60">
-              <p className="text-sm font-medium text-indigo-900 mb-3 dark:text-indigo-200">
-                Policy is selected automatically by employee role:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {Object.keys(policies).map((role) => (
-                  <span
-                    key={role}
-                    className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700"
-                  >
-                    {role}
-                  </span>
-                ))}
-              </div>
-              <p className="text-xs text-indigo-600 mt-2 dark:text-indigo-300">
-                Role mapping is defined in backend data and applied when you click Begin Audit.
-              </p>
-            </div>
-
             <p className="leading-relaxed text-base text-zinc-700 dark:text-zinc-300">
               Employees are expected to exercise good judgment and discretion
               when incurring business expenses. Policies vary based on the

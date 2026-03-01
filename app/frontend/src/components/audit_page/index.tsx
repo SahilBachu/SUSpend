@@ -45,6 +45,8 @@ export default function AuditPage() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const [viewMode, setViewMode] = useState<string>("default");
+
   useEffect(() => {
     const raw = sessionStorage.getItem("audit_results");
     if (!raw) {
@@ -75,15 +77,11 @@ export default function AuditPage() {
     medium_risk_count,
     low_risk_count,
   } = data;
-  const valid_count =
-    audit_results.length -
-    (high_risk_count + medium_risk_count + low_risk_count);
 
   const pieData = [
     { name: "High Risk", value: high_risk_count },
     { name: "Medium Risk", value: medium_risk_count },
     { name: "Low Risk", value: low_risk_count },
-    { name: "Valid", value: valid_count > 0 ? valid_count : 0 },
   ].filter((d) => d.value > 0);
 
   function isInvalid(r: AuditResult) {
@@ -91,14 +89,35 @@ export default function AuditPage() {
     return lvl === "high" || lvl === "medium" || lvl === "low";
   }
 
+  const riskWeight: Record<string, number> = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+
+  const processedResults = [...audit_results]
+    .filter((r) => {
+      if (viewMode === "high_only")
+        return r.risk_level.toLowerCase() === "high";
+      if (viewMode === "medium_only")
+        return r.risk_level.toLowerCase() === "medium";
+      if (viewMode === "low_only") return r.risk_level.toLowerCase() === "low";
+      return true;
+    })
+    .sort((a, b) => {
+      if (viewMode !== "desc" && viewMode !== "asc") return 0;
+      const weightA = riskWeight[a.risk_level.toLowerCase()] || 0;
+      const weightB = riskWeight[b.risk_level.toLowerCase()] || 0;
+      return viewMode === "desc" ? weightB - weightA : weightA - weightB;
+    });
+
   function handleExport() {
     const rows = audit_results.map((r) => ({
-      "Transaction ID": r.transaction_id,
+      Type: r.type || r.transaction_id,
       "Risk Level": r.risk_level,
       Finding: r.finding,
       "Policy Violation": r.policy_violation,
       Recommendation: r.recommendation,
-      Status: isInvalid(r) ? "Invalid" : "Valid",
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -243,7 +262,7 @@ export default function AuditPage() {
         )}
 
         {/* Summary cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="flex justify-center gap-4">
           {[
             {
               label: "High Risk",
@@ -260,15 +279,10 @@ export default function AuditPage() {
               value: low_risk_count,
               color: "text-green-600 bg-green-50 border-green-100",
             },
-            {
-              label: "Valid",
-              value: valid_count > 0 ? valid_count : 0,
-              color: "text-indigo-600 bg-indigo-50 border-indigo-100",
-            },
           ].map((card) => (
             <div
               key={card.label}
-              className={`rounded-2xl border px-5 py-4 ${card.color}`}
+              className={`rounded-2xl border px-5 py-4 w-full max-w-[200px] ${card.color}`}
             >
               <p className="text-xs font-medium uppercase tracking-wide opacity-70">
                 {card.label}
@@ -280,17 +294,36 @@ export default function AuditPage() {
 
         {/* Transactions Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+          <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50 flex items-center justify-between">
             <h2 className="text-base font-semibold text-zinc-900">
               Transactions
             </h2>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-zinc-700">
+                  View:
+                </label>
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value)}
+                  className="text-sm border-zinc-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 pl-2 pr-8"
+                >
+                  <option value="default">Default</option>
+                  <option value="desc">Highest Risk First</option>
+                  <option value="asc">Lowest Risk First</option>
+                  <option value="high_only">High Risk Only</option>
+                  <option value="medium_only">Medium Risk Only</option>
+                  <option value="low_only">Low Risk Only</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-zinc-100">
               <thead className="bg-zinc-50">
                 <tr>
                   {[
-                    "Transaction ID",
+                    "Type",
                     "Risk Level",
                     "Finding",
                     "Policy Violation",
@@ -306,13 +339,13 @@ export default function AuditPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-50">
-                {audit_results.map((r) => (
+                {processedResults.map((r) => (
                   <tr
                     key={r.transaction_id}
                     className="hover:bg-zinc-50/50 transition-colors"
                   >
-                    <td className="px-4 py-3 text-sm font-mono text-zinc-700 whitespace-nowrap">
-                      {r.transaction_id}
+                    <td className="px-4 py-3 text-sm font-medium text-zinc-900 whitespace-nowrap">
+                      {r.type || r.transaction_id}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <RiskBadge level={r.risk_level} />
