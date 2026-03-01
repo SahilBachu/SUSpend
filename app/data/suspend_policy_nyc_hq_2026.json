@@ -1,0 +1,150 @@
+{
+  "policy_id": "suspend-global-expense-benefits-nyc-hq-2026",
+  "policy_name": "SUSpend Global Expense and Benefits Policy (NYC HQ)",
+  "effective_date": "2026-01-01",
+  "scope": {
+    "applies_to": "all_full_time_employees",
+    "headquarters": "NYC"
+  },
+  "overview": {
+    "platform_goal": "Automate expense and benefits compliance.",
+    "corporate_card_required": true,
+    "personal_card_business_use": {
+      "allowed": false,
+      "exception": "Prior authorization required."
+    }
+  },
+  "seniority_levels": {
+    "associate_junior": {
+      "display_name": "Associate / Junior",
+      "daily_food_limit_nyc_usd": 75,
+      "daily_food_limit_international_usd": 100,
+      "max_flight_class": "economy",
+      "hotel_star_rating": {
+        "min": 3,
+        "max": 4
+      }
+    },
+    "manager_director": {
+      "display_name": "Manager / Director",
+      "daily_food_limit_nyc_usd": 120,
+      "daily_food_limit_international_usd": 150,
+      "max_flight_class": "premium_economy",
+      "hotel_star_rating": {
+        "min": 4,
+        "max": 4
+      }
+    },
+    "vp_executive": {
+      "display_name": "VP / Executive",
+      "daily_food_limit_nyc_usd": 200,
+      "daily_food_limit_international_usd": 250,
+      "max_flight_class": "business_class",
+      "hotel_star_rating": {
+        "min": 5,
+        "max": 5
+      }
+    }
+  },
+  "category_rules": {
+    "travel_flights": {
+      "advance_booking_min_days": 14,
+      "last_minute_window_hours": 48,
+      "last_minute_requires_approval": true,
+      "approval_role_required": "vp"
+    },
+    "ground_transportation": {
+      "rideshare_allowed": true,
+      "restricted_service_tiers": [
+        "black",
+        "luxury"
+      ],
+      "restricted_tiers_allowed_levels": [
+        "vp_executive"
+      ]
+    },
+    "meals_and_entertainment": {
+      "individual_meal_uses_daily_limits": true,
+      "team_dinner": {
+        "allowed_for_levels": [
+          "manager_director",
+          "vp_executive"
+        ],
+        "max_per_person_usd": 150,
+        "attendee_list_required": true
+      }
+    }
+  },
+  "reporting_and_compliance": {
+    "personal_report_submission": {
+      "required": true,
+      "frequency": "weekly",
+      "due_day": "friday",
+      "due_time_est": "17:00",
+      "required_action": "Categorize unidentified transactions in portal."
+    },
+    "receipt_upload": {
+      "required_for_single_transaction_over_usd": 25
+    },
+    "violations": {
+      "conditions": [
+        "budget_exceeded",
+        "restricted_merchant"
+      ],
+      "restricted_merchant_examples": [
+        "casinos",
+        "luxury_retail"
+      ],
+      "possible_action": "Temporary suspension of corporate card."
+    }
+  },
+  "ai_matching_hints": {
+    "expected_inputs": [
+      "employee_id",
+      "employee_level",
+      "transaction_amount",
+      "transaction_category",
+      "merchant_name",
+      "merchant_type",
+      "transaction_datetime",
+      "travel_start_datetime",
+      "booking_datetime",
+      "location_context",
+      "receipt_attached",
+      "attendee_list_attached",
+      "approval_role"
+    ],
+    "example_rule_checks": [
+      {
+        "rule_id": "meal_limit_associate_nyc",
+        "if": {
+          "employee_level": "associate_junior",
+          "transaction_category": "meal",
+          "location_context": "nyc",
+          "transaction_amount_gt": 75
+        },
+        "then": {
+          "compliance_status": "non_compliant",
+          "reason": "Meal exceeds Associate/Junior NYC daily limit."
+        }
+      },
+      {
+        "rule_id": "receipt_required_over_25",
+        "if": {
+          "transaction_amount_gt": 25,
+          "receipt_attached": false
+        },
+        "then": {
+          "compliance_status": "non_compliant",
+          "reason": "Receipt required for transactions over $25."
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "currency": "USD",
+    "timezone": "America/New_York",
+    "version": "1.0.0",
+    "last_updated": "2026-02-28"
+  }
+}
