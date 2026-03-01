@@ -23,7 +23,11 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (data.success) {
-        router.push("/admin/dashboard");
+        if (data.role === "admin") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/employee/dashboard");
+        }
         return;
       }
       setError(data.error ?? "Invalid credentials");

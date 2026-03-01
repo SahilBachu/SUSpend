@@ -1,6 +1,16 @@
 {
   "users": [
-    { "id": 1, "username": "admin", "password": "password123" },
-    { "id": 2, "username": "react_user", "password": "safe_password" }
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "password123",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "username": "react_user",
+      "password": "safe_password",
+      "role": "employee"
+    }
   ]
 }
