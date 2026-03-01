@@ -25,8 +25,26 @@ export async function POST(request: NextRequest) {
         role: string;
         firstName?: string;
         lastName?: string;
+        nessie_id?: string;
       }[];
     };
+
+    // Load Role Mappings for the Employee Policy Dashboard
+    const mappingPath = path.join(
+      process.cwd(),
+      "..",
+      "data",
+      "employee_role_mapping_nyc_hq_2026.json",
+    );
+    let mappedRoles: {
+      employee_name_roles: Record<string, string>;
+      customer_id_roles: Record<string, string>;
+    } = { employee_name_roles: {}, customer_id_roles: {} };
+    try {
+      mappedRoles = JSON.parse(fs.readFileSync(mappingPath, "utf-8"));
+    } catch (err) {
+      console.error("Could not load role mapping", err);
+    }
 
     const user = db.users?.find(
       (u) => u.username === username && u.password === password,
@@ -39,6 +57,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const fullNameStr = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    // Default to 'Associate' if no mapping exists so everyone gets a policy
+    const policyRole =
+      (user.nessie_id && mappedRoles.customer_id_roles[user.nessie_id]) ||
+      (fullNameStr && mappedRoles.employee_name_roles[fullNameStr]) ||
+      "Associate";
+
     const { signToken } = await import("@/lib/auth");
     const token = await signToken({
       userId: user.id,
@@ -46,6 +71,8 @@ export async function POST(request: NextRequest) {
       role: user.role,
       firstName: user.firstName,
       lastName: user.lastName,
+      nessie_id: user.nessie_id,
+      policyRole: policyRole,
     });
 
     const response = NextResponse.json({ success: true, role: user.role });

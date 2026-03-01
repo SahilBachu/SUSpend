@@ -17,6 +17,8 @@ export async function GET() {
         role: session.role,
         firstName: session.firstName,
         lastName: session.lastName,
+        nessie_id: session.nessie_id,
+        policyRole: session.policyRole,
       },
     });
   } catch (error) {
