@@ -36,7 +36,7 @@ class OllamaClient:
         model: str = "llama3",
         host: str = DEFAULT_HOST,
         port: int = DEFAULT_PORT,
-        timeout: int = 120,
+        timeout: int = 300,
     ):
         """
         Initialise the client.

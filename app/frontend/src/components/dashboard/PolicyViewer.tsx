@@ -33,9 +33,9 @@ export default function PolicyViewer({
   }, []);
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col max-h-[800px]">
-      <div className="px-6 py-5 border-b border-zinc-100 bg-zinc-50/50 flex-shrink-0">
-        <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2">
+    <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col max-h-[800px] transition-colors dark:bg-zinc-900 dark:border-zinc-800">
+      <div className="px-6 py-5 border-b border-zinc-100 bg-zinc-50/50 flex-shrink-0 dark:border-zinc-800 dark:bg-zinc-900">
+        <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2 dark:text-zinc-100">
           <svg
             className="w-5 h-5 text-indigo-600"
             fill="none"
@@ -52,7 +52,7 @@ export default function PolicyViewer({
           Company Spending Policy
         </h3>
       </div>
-      <div className="p-6 prose prose-zinc prose-sm max-w-none text-zinc-600 flex-grow overflow-y-auto">
+      <div className="p-6 prose prose-zinc prose-sm max-w-none text-zinc-600 flex-grow overflow-y-auto dark:text-zinc-300">
         {loading && (
           <div className="flex justify-center items-center py-10">
             <svg
@@ -75,20 +75,20 @@ export default function PolicyViewer({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <span className="ml-3 text-zinc-500">Loading policies...</span>
+            <span className="ml-3 text-zinc-500 dark:text-zinc-400">Loading policies...</span>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-100">
+          <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 dark:bg-red-950/30 dark:text-red-200 dark:border-red-900/60">
             {error}
           </div>
         )}
 
         {!loading && !error && policies && (
           <div className="space-y-6">
-            <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-              <p className="text-sm font-medium text-indigo-900 mb-3">
+            <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100 dark:bg-indigo-950/30 dark:border-indigo-900/60">
+              <p className="text-sm font-medium text-indigo-900 mb-3 dark:text-indigo-200">
                 Select policy for audit (required):
               </p>
               <div className="flex flex-wrap gap-2">
@@ -100,7 +100,7 @@ export default function PolicyViewer({
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       selectedRole === role
                         ? "bg-indigo-600 text-white"
-                        : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50"
+                        : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700 dark:hover:bg-zinc-700"
                     }`}
                   >
                     {role}
@@ -108,13 +108,13 @@ export default function PolicyViewer({
                 ))}
               </div>
               {selectedRole && (
-                <p className="text-xs text-indigo-600 mt-2">
+                <p className="text-xs text-indigo-600 mt-2 dark:text-indigo-300">
                   Using {policies[selectedRole].title} for audits
                 </p>
               )}
             </div>
 
-            <p className="leading-relaxed text-base">
+            <p className="leading-relaxed text-base text-zinc-700 dark:text-zinc-300">
               Employees are expected to exercise good judgment and discretion
               when incurring business expenses. Policies vary based on the
               employee's role level.
@@ -123,9 +123,9 @@ export default function PolicyViewer({
             {Object.entries(policies).map(([role, policyData]) => (
               <details
                 key={role}
-                className="bg-amber-50 rounded-xl p-5 border border-amber-100 shadow-sm mt-4 group"
+                className="bg-amber-50 rounded-xl p-5 border border-amber-100 shadow-sm mt-4 group dark:bg-amber-950/20 dark:border-amber-900/50"
               >
-                <summary className="text-amber-800 font-semibold cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between outline-none">
+                <summary className="text-amber-800 font-semibold cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between outline-none dark:text-amber-200">
                   <div className="flex items-center gap-2">
                     <svg
                       className="w-4 h-4"
@@ -156,15 +156,15 @@ export default function PolicyViewer({
                     />
                   </svg>
                 </summary>
-                <div className="text-amber-900/80 text-sm whitespace-pre-wrap leading-relaxed pt-3 mt-3 border-t border-amber-200/60">
+                <div className="text-amber-900/80 text-sm whitespace-pre-wrap leading-relaxed pt-3 mt-3 border-t border-amber-200/60 dark:text-amber-100/80 dark:border-amber-900/50">
                   {policyData.policy}
                 </div>
               </details>
             ))}
 
-            <div className="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
-              <p className="leading-relaxed text-sm text-indigo-900/80">
-                <strong className="text-indigo-900">
+            <div className="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 dark:bg-indigo-950/20 dark:border-indigo-900/50">
+              <p className="leading-relaxed text-sm text-indigo-900/80 dark:text-indigo-100/80">
+                <strong className="text-indigo-900 dark:text-indigo-200">
                   Auditor Instructions:
                 </strong>{" "}
                 When auditing an employee, verify that all submitted expenses

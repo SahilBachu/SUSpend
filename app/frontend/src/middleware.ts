@@ -5,6 +5,7 @@ import { verifyToken } from "@/lib/auth";
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("session")?.value;
   const path = request.nextUrl.pathname;
+  const isPublicAsset = /\.(png|jpg|jpeg|gif|webp|svg|ico)$/i.test(path);
 
   // Paths that don't require authentication
   const publicPaths = [
@@ -12,9 +13,8 @@ export async function middleware(request: NextRequest) {
     "/api/auth/login",
     "/_next",
     "/favicon.ico",
-    "/Feeling (5).png",
   ];
-  if (publicPaths.some((p) => path.startsWith(p))) {
+  if (isPublicAsset || publicPaths.some((p) => path.startsWith(p))) {
     return NextResponse.next();
   }
 

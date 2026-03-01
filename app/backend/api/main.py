@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 NESSIE_API_KEY = os.getenv("NESSIE_API_KEY")
 NESSIE_BASE_URL = os.getenv("NESSIE_BASE_URL", "http://api.nessieisreal.com")
-REQUEST_TIMEOUT_SECONDS = 15
+REQUEST_TIMEOUT_SECONDS = 15 
 
 # Path to policy JSON (app/data/suspend_policy_nyc_hq_2026.json)
 POLICY_FILE_PATH = os.path.join(

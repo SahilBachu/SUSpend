@@ -81,9 +81,9 @@ export default function EmployeeAuditSearch({
   };
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col h-full">
-      <div className="px-6 py-5 border-b border-zinc-100 bg-zinc-50/50">
-        <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2">
+    <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col h-full transition-colors dark:bg-zinc-900 dark:border-zinc-800">
+      <div className="px-6 py-5 border-b border-zinc-100 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900">
+        <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2 dark:text-zinc-100">
           <svg
             className="w-5 h-5 text-indigo-600"
             fill="none"
@@ -108,7 +108,7 @@ export default function EmployeeAuditSearch({
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <svg
-                className="h-5 w-5 text-zinc-400"
+                className="h-5 w-5 text-zinc-400 dark:text-zinc-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -124,7 +124,7 @@ export default function EmployeeAuditSearch({
             <input
               id="search"
               type="text"
-              className="block w-full pl-11 pr-[200px] py-3.5 border border-zinc-200 rounded-xl leading-5 bg-zinc-50/50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white sm:text-sm transition-all"
+              className="block w-full pl-11 pr-[200px] py-3.5 border border-zinc-200 rounded-xl leading-5 bg-zinc-50/50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white sm:text-sm transition-all dark:border-zinc-700 dark:bg-zinc-800 dark:placeholder-zinc-500 dark:text-zinc-100 dark:focus:bg-zinc-800"
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -134,14 +134,14 @@ export default function EmployeeAuditSearch({
                 type="button"
                 onClick={fetchAllUsers}
                 disabled={isSearching}
-                className="inline-flex items-center px-4 py-2 border border-zinc-200 text-sm font-medium rounded-lg shadow-sm text-zinc-700 bg-white hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center px-4 py-2 border border-zinc-200 text-sm font-medium rounded-lg shadow-sm text-zinc-700 bg-white hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:border-zinc-700 dark:text-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:focus:ring-offset-zinc-900"
               >
                 Fetch All
               </button>
               <button
                 type="submit"
                 disabled={isSearching || !searchQuery.trim()}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:focus:ring-offset-zinc-900"
               >
                 {isSearching ? (
                   <svg
@@ -174,7 +174,7 @@ export default function EmployeeAuditSearch({
         {/* Results Area */}
         <div className="flex-grow flex flex-col min-h-0">
           {error && (
-            <div className="mb-4 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 flex items-start gap-3">
+            <div className="mb-4 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 flex items-start gap-3 dark:bg-red-950/30 dark:text-red-200 dark:border-red-900/60">
               <svg
                 className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500"
                 fill="none"
@@ -192,7 +192,7 @@ export default function EmployeeAuditSearch({
             </div>
           )}
 
-          <div className="mb-3 text-sm font-medium text-zinc-500 px-1 flex items-center justify-between">
+          <div className="mb-3 text-sm font-medium text-zinc-500 px-1 flex items-center justify-between dark:text-zinc-400">
             <span>
               {searchResults.length > 0
                 ? "Search Results"
@@ -201,19 +201,19 @@ export default function EmployeeAuditSearch({
                   : "Recent Searches"}
             </span>
             {searchResults.length > 0 && (
-              <span className="text-xs bg-zinc-100 px-2 py-0.5 rounded-full text-zinc-600">
+              <span className="text-xs bg-zinc-100 px-2 py-0.5 rounded-full text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
                 {searchResults.length} found
               </span>
             )}
           </div>
 
           <div className="relative flex-1 min-h-0">
-            <div className="absolute inset-0 border border-zinc-200 rounded-xl bg-white overflow-y-auto w-full">
+            <div className="absolute inset-0 border border-zinc-200 rounded-xl bg-white overflow-y-auto w-full dark:border-zinc-700 dark:bg-zinc-900">
               {searchResults.length === 0 && !isSearching ? (
                 <div className="h-full flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
-                  <div className="w-12 h-12 bg-zinc-50 rounded-full flex items-center justify-center mb-3 border border-zinc-100">
+                  <div className="w-12 h-12 bg-zinc-50 rounded-full flex items-center justify-center mb-3 border border-zinc-100 dark:bg-zinc-800 dark:border-zinc-700">
                     <svg
-                      className="w-6 h-6 text-zinc-400"
+                      className="w-6 h-6 text-zinc-400 dark:text-zinc-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -226,38 +226,38 @@ export default function EmployeeAuditSearch({
                       />
                     </svg>
                   </div>
-                  <p className="text-zinc-500 text-sm">
+                  <p className="text-zinc-500 text-sm dark:text-zinc-400">
                     Enter a name or click Fetch All to find employees to audit.
                   </p>
-                  <p className="text-zinc-400 text-xs mt-1">
+                  <p className="text-zinc-400 text-xs mt-1 dark:text-zinc-500">
                     Try searching for "John" or "Sarah"
                   </p>
                 </div>
               ) : (
-                <ul className="divide-y divide-zinc-100">
+                <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {searchResults.map((emp) => (
                     <li key={emp.customer_id}>
                       <button
                         onClick={() => setSelectedEmployee(emp)}
-                        className={`w-full text-left px-5 py-3.5 flex items-center space-x-4 hover:bg-zinc-50 transition-colors ${
+                        className={`w-full text-left px-5 py-3.5 flex items-center space-x-4 hover:bg-zinc-50 transition-colors dark:hover:bg-zinc-800 ${
                           selectedEmployee?.customer_id === emp.customer_id
-                            ? "bg-indigo-50/60 hover:bg-indigo-50/80 ring-1 ring-inset ring-indigo-200"
+                            ? "bg-indigo-50/60 hover:bg-indigo-50/80 ring-1 ring-inset ring-indigo-200 dark:bg-indigo-950/30 dark:hover:bg-indigo-950/40 dark:ring-indigo-900/70"
                             : ""
                         }`}
                       >
                         <img
                           src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`}
                           alt=""
-                          className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200"
+                          className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
                         />
                         <div className="flex-1 min-w-0">
                           <p
-                            className={`text-sm font-medium truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-900" : "text-zinc-900"}`}
+                            className={`text-sm font-medium truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-900 dark:text-indigo-200" : "text-zinc-900 dark:text-zinc-100"}`}
                           >
                             {emp.name}
                           </p>
                           <p
-                            className={`text-xs truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-600" : "text-zinc-500"}`}
+                            className={`text-xs truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-600 dark:text-indigo-300" : "text-zinc-500 dark:text-zinc-400"}`}
                           >
                             ID: {emp.customer_id}
                           </p>
@@ -285,12 +285,12 @@ export default function EmployeeAuditSearch({
         </div>
 
         {/* Action Area */}
-        <div className="mt-8 pt-5 border-t border-zinc-100 flex items-center justify-between">
-          <div className="text-sm text-zinc-500">
+        <div className="mt-8 pt-5 border-t border-zinc-100 flex items-center justify-between dark:border-zinc-800">
+          <div className="text-sm text-zinc-500 dark:text-zinc-400">
             {!policyText ? (
               "Select a policy (left) to enable audit"
             ) : selectedEmployee ? (
-              <span className="flex items-center text-indigo-600">
+              <span className="flex items-center text-indigo-600 dark:text-indigo-300">
                 <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
                 {selectedEmployee.name} selected
               </span>
@@ -302,7 +302,7 @@ export default function EmployeeAuditSearch({
             type="button"
             disabled={!selectedEmployee || !policyText || isAuditing}
             onClick={handleBeginAudit}
-            className="relative inline-flex items-center overflow-hidden px-6 py-2.5 border border-indigo-500/80 text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-[0_8px_20px_rgba(79,70,229,0.35)] hover:shadow-[0_10px_24px_rgba(79,70,229,0.5)] before:absolute before:inset-x-0 before:top-0 before:h-1/2 before:bg-gradient-to-b before:from-white/40 before:to-transparent before:pointer-events-none disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:shadow-none disabled:before:from-transparent disabled:cursor-not-allowed transition-all"
+            className="relative inline-flex items-center overflow-hidden px-6 py-2.5 border border-indigo-500/80 text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-[0_8px_20px_rgba(79,70,229,0.35)] hover:shadow-[0_10px_24px_rgba(79,70,229,0.5)] before:absolute before:inset-x-0 before:top-0 before:h-1/2 before:bg-gradient-to-b before:from-white/40 before:to-transparent before:pointer-events-none disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:shadow-none disabled:before:from-transparent disabled:cursor-not-allowed transition-all dark:focus:ring-offset-zinc-900 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-500 dark:disabled:border-zinc-700"
           >
             {isAuditing ? (
               <>
