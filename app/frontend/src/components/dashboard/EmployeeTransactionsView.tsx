@@ -34,7 +34,6 @@ export default function EmployeeTransactionsView({
   const [policy, setPolicy] = useState<PolicyRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -89,7 +88,7 @@ export default function EmployeeTransactionsView({
 
   if (error || !nessieId) {
     return (
-      <div className="p-6 bg-red-50 text-red-600 rounded-xl mt-6 text-center shadow-sm border border-red-100">
+      <div className="p-6 bg-red-50 text-red-600 rounded-xl mt-6 text-center shadow-sm border border-red-100 dark:bg-red-950/30 dark:text-red-200 dark:border-red-900/60">
         <p className="font-semibold">Unable to load dashboard profile.</p>
         <p className="text-sm opacity-80 mt-1">
           {error || "Missing Nessie authentication."}
@@ -104,38 +103,38 @@ export default function EmployeeTransactionsView({
     <div className="mt-8 space-y-6">
       {/* Metric Counters Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-1">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-1 dark:text-zinc-400">
             Total Accounts
           </p>
-          <h3 className="text-3xl font-bold text-zinc-900">
+          <h3 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
             {statement?.account_count || 0}
           </h3>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-1">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-1 dark:text-zinc-400">
             Card Transactions
           </p>
-          <h3 className="text-3xl font-bold text-zinc-900">
+          <h3 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
             {statement?.card_transaction_count || 0}
           </h3>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-1">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-1 dark:text-zinc-400">
             Bills Tracked
           </p>
-          <h3 className="text-3xl font-bold text-zinc-900">
+          <h3 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
             {statement?.bill_count || 0}
           </h3>
         </div>
       </div>
 
       {/* Recent Transactions List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-        <div className="p-6 border-b border-zinc-200 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-zinc-900 flex items-center space-x-2">
+      <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden dark:bg-zinc-900 dark:border-zinc-800">
+        <div className="p-6 border-b border-zinc-200 flex justify-between items-center dark:border-zinc-800">
+          <h2 className="text-lg font-bold text-zinc-900 flex items-center space-x-2 dark:text-zinc-100">
             <svg
               className="w-5 h-5 text-indigo-500"
               fill="none"
@@ -154,31 +153,25 @@ export default function EmployeeTransactionsView({
         </div>
 
         {transactions.length === 0 ? (
-          <div className="p-8 text-center text-zinc-500 bg-zinc-50/50">
+          <div className="p-8 text-center text-zinc-500 bg-zinc-50/50 dark:text-zinc-400 dark:bg-zinc-900">
             No recent transactions found.
           </div>
         ) : (
-          <div className="divide-y divide-zinc-100">
-            {transactions.map((tx, idx) => {
-              const isExpanded = expandedIdx === idx;
-              return (
-                <div key={idx} className="flex flex-col">
-                  {/* Clickable Row */}
-                  <div
-                    onClick={() => setExpandedIdx(isExpanded ? null : idx)}
-                    className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors cursor-pointer"
-                  >
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+            {transactions.map((tx, idx) => (
+              <div key={idx} className="flex flex-col">
+                <div className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors dark:hover:bg-zinc-800/60">
                     <div className="flex items-center space-x-4">
-                      <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
+                      <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold dark:bg-indigo-900/40 dark:text-indigo-300">
                         {tx.description
                           ? tx.description.charAt(0).toUpperCase()
                           : "$"}
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-zinc-900 max-w-xs truncate">
+                        <h3 className="text-sm font-semibold text-zinc-900 max-w-xs truncate dark:text-zinc-100">
                           {tx.description || "Credit Card Transaction"}
                         </h3>
-                        <p className="text-xs text-zinc-500 mt-1">
+                        <p className="text-xs text-zinc-500 mt-1 dark:text-zinc-400">
                           {tx.purchase_date}
                         </p>
                       </div>
@@ -186,47 +179,21 @@ export default function EmployeeTransactionsView({
 
                     <div className="text-right flex items-center space-x-4">
                       <div>
-                        <p className="font-bold text-zinc-900">
+                        <p className="font-bold text-zinc-900 dark:text-zinc-100">
                           ${tx.amount.toFixed(2)}
                         </p>
                       </div>
-                      {/* Chevron Indicator */}
-                      <svg
-                        className={`w-5 h-5 text-zinc-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
                     </div>
-                  </div>
-
-                  {/* Expanded JSON Details */}
-                  {isExpanded && (
-                    <div className="px-6 pb-6 bg-zinc-50 border-t border-zinc-100">
-                      <div className="mt-4 bg-zinc-900 p-4 rounded-xl overflow-x-auto">
-                        <pre className="text-xs text-zinc-300 font-mono">
-                          {JSON.stringify(tx, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
       </div>
 
       {/* Policy Details Section */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-        <h2 className="text-lg font-bold text-zinc-900 mb-4 pb-4 border-b border-zinc-100 flex items-center space-x-2">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+        <h2 className="text-lg font-bold text-zinc-900 mb-4 pb-4 border-b border-zinc-100 flex items-center space-x-2 dark:text-zinc-100 dark:border-zinc-800">
           <svg
             className="w-5 h-5 text-indigo-500"
             fill="none"
@@ -245,11 +212,11 @@ export default function EmployeeTransactionsView({
           </span>
         </h2>
         {policy?.policy ? (
-          <div className="prose prose-sm max-w-none text-zinc-600 whitespace-pre-line bg-zinc-50 p-6 rounded-xl border border-zinc-100 leading-relaxed font-mono">
+          <div className="prose prose-sm max-w-none text-zinc-600 whitespace-pre-line bg-zinc-50 p-6 rounded-xl border border-zinc-100 leading-relaxed font-mono dark:text-zinc-300 dark:bg-zinc-800 dark:border-zinc-700">
             {policy.policy}
           </div>
         ) : (
-          <p className="text-zinc-500 italic">No policy documents found.</p>
+          <p className="text-zinc-500 italic dark:text-zinc-400">No policy documents found.</p>
         )}
       </div>
     </div>
