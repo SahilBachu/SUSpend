@@ -189,11 +189,6 @@ export default function EmployeeTransactionsView({
                         <p className="font-bold text-zinc-900">
                           ${tx.amount.toFixed(2)}
                         </p>
-                        <p
-                          className={`text-xs font-semibold capitalize mt-1 ${tx.status === "pending" ? "text-amber-500" : "text-emerald-500"}`}
-                        >
-                          {tx.status}
-                        </p>
                       </div>
                       {/* Chevron Indicator */}
                       <svg
