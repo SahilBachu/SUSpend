@@ -302,7 +302,7 @@ export default function EmployeeAuditSearch({
             type="button"
             disabled={!selectedEmployee || !policyText || isAuditing}
             onClick={handleBeginAudit}
-            className="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:cursor-not-allowed transition-all"
+            className="relative inline-flex items-center overflow-hidden px-6 py-2.5 border border-indigo-500/80 text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-[0_8px_20px_rgba(79,70,229,0.35)] hover:shadow-[0_10px_24px_rgba(79,70,229,0.5)] before:absolute before:inset-x-0 before:top-0 before:h-1/2 before:bg-gradient-to-b before:from-white/40 before:to-transparent before:pointer-events-none disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:shadow-none disabled:before:from-transparent disabled:cursor-not-allowed transition-all"
           >
             {isAuditing ? (
               <>
