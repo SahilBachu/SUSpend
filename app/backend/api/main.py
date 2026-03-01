@@ -298,7 +298,6 @@ def build_employee_statement(customer_id: str):
             transaction = {
                 "transaction_id": purchase.get("_id"),
                 "merchant_id": purchase.get("merchant_id"),
-                "type": purchase.get("type"),
                 "amount": purchase.get("amount"),
                 "status": purchase.get("status"),
                 "description": purchase.get("description"),
@@ -514,7 +513,6 @@ def get_employee_transactions(customer_id: str):
                     "account_type": account_type,
                     "transaction_id": purchase.get("_id"),
                     "merchant_id": purchase.get("merchant_id"),
-                    "type": purchase.get("type"),
                     "amount": purchase.get("amount"),
                     "status": purchase.get("status"),
                     "description": purchase.get("description"),
@@ -722,7 +720,6 @@ def audit_run():
                     "account_id": account_id,
                     "account_type": account.get("type"),
                     "merchant_id": purchase.get("merchant_id"),
-                    "type": purchase.get("type"),
                     "amount": purchase.get("amount"),
                     "status": purchase.get("status"),
                     "description": purchase.get("description"),

@@ -1,6 +1,12 @@
 import requests
+import os
+import json
+from dotenv import load_dotenv
 
-key = 'f14cb63b78cdfb16e2950ae14c0ca624'
+load_dotenv('app/backend/api/.env')
+key = os.getenv('NESSIE_API_KEY')
+print("Key:", "loaded" if key else "missing")
+
 url_cust = f'http://api.nessieisreal.com/customers?key={key}'
 customers = requests.get(url_cust).json()
 if customers:
@@ -12,6 +18,10 @@ if customers:
         url_pur = f'http://api.nessieisreal.com/accounts/{a_id}/purchases?key={key}'
         purchases = requests.get(url_pur).json()
         if purchases:
-            print("Purchase Object:")
-            import json
-            print(json.dumps(purchases[0], indent=2))
+            print("Purchase object:", json.dumps(purchases[0], indent=2))
+        else:
+            print("No purchases found for this account")
+    else:
+        print("No accounts found")
+else:
+    print("No customers found")
