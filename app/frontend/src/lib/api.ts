@@ -48,6 +48,8 @@ export interface PolicyRole {
 export interface AuditResult {
   transaction_id: string;
   risk_level: string;
+  category?: string;
+  over_budget_amount?: number;
   finding: string;
   policy_violation: string;
   recommendation: string;
@@ -57,6 +59,7 @@ export interface AuditResponse {
   status: string;
   customer_id: string;
   policy_role?: string;
+  ticket_override_applied_count?: number;
   audit_results: AuditResult[];
   summary: string;
   high_risk_count: number;

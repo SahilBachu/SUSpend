@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import { UserDTO } from "@/types/user";
 import PolicyViewer from "@/components/dashboard/PolicyViewer";
 import EmployeeAuditSearch from "@/components/dashboard/EmployeeAuditSearch";
+import TicketsRaisedPanel from "@/components/dashboard/TicketsRaisedPanel";
 
 export default function Page() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -79,6 +80,9 @@ export default function Page() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <PolicyViewer />
           <EmployeeAuditSearch />
+        </div>
+        <div className="mt-8">
+          <TicketsRaisedPanel />
         </div>
       </main>
     </div>

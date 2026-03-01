@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import EmployeeTransactionsView from "@/components/dashboard/EmployeeTransactionsView";
+import EmployeeTicketRaising from "@/components/dashboard/EmployeeTicketRaising";
 import Navbar from "@/components/layout/Navbar";
 import { UserDTO } from "@/types/user";
 
@@ -90,6 +91,9 @@ export default function EmployeeDashboard() {
           nessieId={user?.nessieId}
           policyRoleStr={user?.policyRole || "Associate"}
         />
+        <div className="mt-8">
+          <EmployeeTicketRaising />
+        </div>
       </div>
     </div>
   );

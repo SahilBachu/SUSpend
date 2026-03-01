@@ -1,0 +1,49 @@
+{
+  "tickets": [
+    {
+      "id": "ticket_1772369148332_fktjtb",
+      "employeeUserId": "2",
+      "employeeName": "John Smith",
+      "employeeUsername": "john.smith",
+      "nessieId": "69a3c81295150878eaffb5d9",
+      "category": "MEALS & DINING",
+      "overBudgetAmount": 45.5,
+      "reason": "Client onsite meal exceeded cap due to mandatory meeting",
+      "status": "approved",
+      "adminNote": "Approved for client meeting exception",
+      "createdAt": "2026-03-01T12:45:48.332Z",
+      "reviewedAt": "2026-03-01T12:45:50.010Z",
+      "reviewedBy": "admin"
+    },
+    {
+      "id": "ticket_1772369883892_hkjkoy",
+      "employeeUserId": "9",
+      "employeeName": "Laura Anderson",
+      "employeeUsername": "laura.anderson",
+      "nessieId": "69a3c81695150878eaffb60c",
+      "category": "PROHIBITED CATEGORIES",
+      "overBudgetAmount": 1,
+      "reason": "Pre-approved exception for policy overage",
+      "status": "approved",
+      "adminNote": "Approved for compliance test override",
+      "createdAt": "2026-03-01T12:58:03.892Z",
+      "reviewedAt": "2026-03-01T12:58:04.028Z",
+      "reviewedBy": "admin"
+    },
+    {
+      "id": "ticket_1772370255062_ow3el3",
+      "employeeUserId": "2",
+      "employeeName": "John Smith",
+      "employeeUsername": "john.smith",
+      "nessieId": "69a3c81295150878eaffb5d9",
+      "category": "TRAVEL",
+      "overBudgetAmount": 100,
+      "reason": "flight ticket",
+      "status": "rejected",
+      "adminNote": "no",
+      "createdAt": "2026-03-01T13:04:15.062Z",
+      "reviewedAt": "2026-03-01T13:05:23.287Z",
+      "reviewedBy": "admin"
+    }
+  ]
+}

@@ -25,6 +25,8 @@ class AuditResult(BaseModel):
 
     transaction_id: str
     risk_level: str = Field(..., pattern=r"^(high|medium|low)$")
+    category: str = "Uncategorized"
+    over_budget_amount: float = 0.0
     finding: str
     policy_violation: str
     recommendation: str
@@ -34,6 +36,24 @@ class AuditResult(BaseModel):
     def normalise_risk_level(cls, v: str) -> str:
         """Normalise risk level to lowercase for consistency."""
         return v.lower().strip()
+
+    @field_validator("category")
+    @classmethod
+    def normalise_category(cls, v: str) -> str:
+        if not v:
+            return "Uncategorized"
+        return " ".join(v.strip().split())
+
+    @field_validator("over_budget_amount")
+    @classmethod
+    def non_negative_over_budget(cls, v: float) -> float:
+        try:
+            value = float(v)
+        except (TypeError, ValueError):
+            return 0.0
+        if value < 0:
+            return 0.0
+        return round(value, 2)
 
 
 class AuditReport(BaseModel):

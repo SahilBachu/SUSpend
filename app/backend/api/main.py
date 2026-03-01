@@ -45,6 +45,9 @@ POLICY_FILE_PATH = os.path.join(
 ROLE_MAPPING_FILE_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..", "data", "employee_role_mapping_nyc_hq_2026.json"
 )
+TICKETS_FILE_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "data", "tickets_raised_nyc_hq_2026.json"
+)
 
 DEFAULT_POLICY = (
     "Meals and food expenses must not exceed $50 per transaction. "
@@ -119,6 +122,89 @@ def resolve_policy_role(customer_id: str) -> tuple[str | None, str | None]:
             role = employee_name_roles.get(employee_name.strip().lower())
 
     return role, employee_name
+
+
+def load_ticket_store() -> dict:
+    if not os.path.exists(TICKETS_FILE_PATH):
+        return {"tickets": []}
+    try:
+        with open(TICKETS_FILE_PATH, encoding="utf-8") as f:
+            parsed = json.load(f)
+    except json.JSONDecodeError:
+        logger.warning("Invalid tickets JSON file at %s; ignoring overrides", TICKETS_FILE_PATH)
+        return {"tickets": []}
+    tickets = parsed.get("tickets")
+    if not isinstance(tickets, list):
+        return {"tickets": []}
+    return {"tickets": tickets}
+
+
+def _normalize_category(value: str) -> str:
+    if not isinstance(value, str):
+        return ""
+    lowered = value.strip().lower()
+    return "".join(ch for ch in lowered if ch.isalnum())
+
+
+def load_approved_tickets_for_customer(customer_id: str) -> list[dict]:
+    store = load_ticket_store()
+    approved = []
+    for ticket in store["tickets"]:
+        if not isinstance(ticket, dict):
+            continue
+        if str(ticket.get("status", "")).lower() != "approved":
+            continue
+        if str(ticket.get("nessieId", "")).strip() != customer_id:
+            continue
+        approved.append(ticket)
+    return approved
+
+
+def apply_approved_ticket_overrides(report, customer_id: str) -> int:
+    approved_tickets = load_approved_tickets_for_customer(customer_id)
+    if not approved_tickets:
+        return 0
+
+    override_count = 0
+    for result in report.audit_results:
+        if str(result.risk_level).lower() != "high":
+            continue
+
+        finding_category = _normalize_category(result.category)
+        try:
+            finding_overage = float(result.over_budget_amount or 0)
+        except (TypeError, ValueError):
+            finding_overage = 0.0
+
+        matched_ticket = None
+        for ticket in approved_tickets:
+            ticket_category = _normalize_category(str(ticket.get("category", "")))
+            try:
+                approved_overage = float(ticket.get("overBudgetAmount", 0) or 0)
+            except (TypeError, ValueError):
+                approved_overage = 0.0
+            if ticket_category == finding_category and finding_overage <= approved_overage:
+                matched_ticket = ticket
+                break
+
+        if not matched_ticket:
+            continue
+
+        result.risk_level = "low"
+        ticket_id = matched_ticket.get("id", "approved-ticket")
+        override_note = (
+            f"Ticket raised and approved ({ticket_id}) for category '{matched_ticket.get('category', 'N/A')}' "
+            f"with approved over-budget amount ${float(matched_ticket.get('overBudgetAmount', 0) or 0):.2f}."
+        )
+        if override_note not in result.finding:
+            result.finding = f"{result.finding} {override_note}".strip()
+        if "ticket was raised and approved" not in result.recommendation.lower():
+            result.recommendation = (
+                f"{result.recommendation} Ticket was raised and approved by admin."
+            ).strip()
+        override_count += 1
+
+    return override_count
 
 
 def missing_api_key():
@@ -670,13 +756,21 @@ def audit_run():
         logger.exception("Unexpected audit error: %s", exc)
         return jsonify({"error": f"Internal error: {exc}"}), 500
 
+    ticket_override_applied_count = apply_approved_ticket_overrides(report, customer_id)
     counts = count_risk_levels(report)
+    if ticket_override_applied_count:
+        logger.info(
+            "POST /audit/run | ticket overrides applied=%d | customer_id=%s",
+            ticket_override_applied_count,
+            customer_id,
+        )
 
     return jsonify(
         {
             "status": "success",
             "customer_id": customer_id,
             "policy_role": policy_role,
+            "ticket_override_applied_count": ticket_override_applied_count,
             "audit_results": [r.model_dump() for r in report.audit_results],
             "summary": report.summary,
             **counts,
