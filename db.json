@@ -6,15 +6,98 @@
       "password": "password123",
       "role": "admin",
       "firstName": "Hitha",
-      "lastName": "Rayachoti"
+      "lastName": "Rayachoti",
+      "nessie_id": "null"
     },
     {
       "id": 2,
-      "username": "react_user",
-      "password": "safe_password",
+      "username": "john.smith",
+      "password": "password123",
       "role": "employee",
-      "firstName": "Sahil",
-      "lastName": "Bachu"
+      "firstName": "John",
+      "lastName": "Smith",
+      "nessie_id": "69a3c81295150878eaffb5d9"
+    },
+    {
+      "id": 3,
+      "username": "sarah.johnson",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "nessie_id": "69a3c81395150878eaffb5e0"
+    },
+    {
+      "id": 4,
+      "username": "michael.chen",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Michael",
+      "lastName": "Chen",
+      "nessie_id": "69a3c81495150878eaffb5e9"
+    },
+    {
+      "id": 5,
+      "username": "emily.williams",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Emily",
+      "lastName": "Williams",
+      "nessie_id": "69a3c81495150878eaffb5f0"
+    },
+    {
+      "id": 6,
+      "username": "david.brown",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "David",
+      "lastName": "Brown",
+      "nessie_id": "69a3c81495150878eaffb5f7"
+    },
+    {
+      "id": 7,
+      "username": "jessica.martinez",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Jessica",
+      "lastName": "Martinez",
+      "nessie_id": "69a3c81595150878eaffb5fe"
+    },
+    {
+      "id": 8,
+      "username": "robert.taylor",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Robert",
+      "lastName": "Taylor",
+      "nessie_id": "69a3c81595150878eaffb605"
+    },
+    {
+      "id": 9,
+      "username": "laura.anderson",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Laura",
+      "lastName": "Anderson",
+      "nessie_id": "69a3c81695150878eaffb60c"
+    },
+    {
+      "id": 10,
+      "username": "james.wilson",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "James",
+      "lastName": "Wilson",
+      "nessie_id": "69a3c81795150878eaffb613"
+    },
+    {
+      "id": 11,
+      "username": "patricia.davis",
+      "password": "password123",
+      "role": "employee",
+      "firstName": "Patricia",
+      "lastName": "Davis",
+      "nessie_id": "69a3c81795150878eaffb61a"
     }
   ]
 }
