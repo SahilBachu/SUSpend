@@ -48,14 +48,14 @@ export default function AuditPage() {
   useEffect(() => {
     const raw = sessionStorage.getItem("audit_results");
     if (!raw) {
-      router.replace("/dashboard");
+      router.replace("/admin/dashboard");
       return;
     }
     try {
       const parsed: StoredAuditData = JSON.parse(raw);
       setData(parsed);
     } catch {
-      router.replace("/dashboard");
+      router.replace("/admin/dashboard");
     }
   }, [router]);
 
@@ -142,7 +142,7 @@ export default function AuditPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/admin/dashboard")}
               className="text-sm text-zinc-500 hover:text-indigo-600 flex items-center gap-1 mb-1 transition-colors"
             >
               <svg

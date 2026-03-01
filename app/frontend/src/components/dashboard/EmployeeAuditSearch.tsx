@@ -72,7 +72,7 @@ export default function EmployeeAuditSearch({
         "audit_results",
         JSON.stringify({ ...response, employee_name: selectedEmployee.name }),
       );
-      router.push("/dashboard/audit");
+      router.push("/admin/dashboard/audit");
     } catch (err: any) {
       console.error("Audit failed", err);
       setError(err.message || "Audit failed. Please try again.");
