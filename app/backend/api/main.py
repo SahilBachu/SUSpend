@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import sys
@@ -33,6 +34,11 @@ logger = logging.getLogger(__name__)
 NESSIE_API_KEY = os.getenv("NESSIE_API_KEY")
 NESSIE_BASE_URL = os.getenv("NESSIE_BASE_URL", "http://api.nessieisreal.com")
 REQUEST_TIMEOUT_SECONDS = 15
+
+# Path to policy JSON (app/data/suspend_policy_nyc_hq_2026.json)
+POLICY_FILE_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "data", "suspend_policy_nyc_hq_2026.json"
+)
 
 DEFAULT_POLICY = (
     "Meals and food expenses must not exceed $50 per transaction. "
@@ -204,12 +210,52 @@ def home():
                 "/employees/<customer_id>/transactions",
                 "/employees/<customer_id>/statement",
                 "/employees/by-name/<employee_name>/statement",
+                "GET  /policy — Expense policies by role (?role=Associate|Manager|VP optional)",
                 "POST /audit/run — LLM audit for an employee (body: {customer_id, policy_text?, fraud_focus?})",
                 "POST /audit/email — Generate email from audit results (body: {employee_name, audit_results, summary})",
                 "GET  /audit/health — Ollama health check",
             ],
         }
     )
+
+
+@app.get("/policy")
+def get_policy():
+    """
+    Return expense policies from app/data/suspend_policy_nyc_hq_2026.json.
+
+    Query params:
+        role (optional): Filter to one role — Associate, Manager, or VP.
+
+    Returns:
+        200 { Associate: {...}, Manager: {...}, VP: {...} } or single role if ?role= specified
+        500 if policy file missing or invalid
+    """
+    try:
+        with open(POLICY_FILE_PATH, encoding="utf-8") as f:
+            policies = json.load(f)
+    except FileNotFoundError:
+        logger.error("Policy file not found: %s", POLICY_FILE_PATH)
+        return jsonify({"error": "Policy file not found"}), 500
+    except json.JSONDecodeError as exc:
+        logger.error("Invalid policy JSON: %s", exc)
+        return jsonify({"error": "Invalid policy file"}), 500
+
+    role = request.args.get("role", "").strip()
+    if role:
+        if role not in policies:
+            return (
+                jsonify(
+                    {
+                        "error": f"Unknown role: {role}",
+                        "available_roles": list(policies.keys()),
+                    }
+                ),
+                400,
+            )
+        return jsonify(policies[role])
+
+    return jsonify(policies)
 
 
 @app.get("/employees")
