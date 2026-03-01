@@ -6,6 +6,7 @@ import sys
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 # ---------------------------------------------------------------------------
 # LLM module path — must come before the LLM imports below
@@ -26,6 +27,7 @@ from prompt import (  # noqa: E402
 )
 
 app = Flask(__name__)
+CORS(app)
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
