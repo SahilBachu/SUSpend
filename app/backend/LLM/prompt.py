@@ -19,7 +19,6 @@ AUDIT_RESPONSE_SCHEMA = {
                 "type": "object",
                 "properties": {
                     "transaction_id": {"type": "string"},
-                    "type": {"type": "string"},
                     "risk_level": {"type": "string", "enum": ["high", "medium", "low"]},
                     "category": {"type": "string"},
                     "over_budget_amount": {"type": "number"},
@@ -29,7 +28,6 @@ AUDIT_RESPONSE_SCHEMA = {
                 },
                 "required": [
                     "transaction_id",
-                    "type",
                     "risk_level",
                     "category",
                     "over_budget_amount",
@@ -69,7 +67,6 @@ OUTPUT REQUIREMENTS:
 You must output a JSON object with:
 - "audit_results": array of objects, one per transaction. Each object must have:
   - "transaction_id": the transaction's id from the input
-  - "type": the transaction's type from the input
   - "risk_level": exactly "high", "medium", or "low" (lowercase)
   - "category": expense category label inferred from transaction/policy (e.g., "Meals & Dining", "Travel")
   - "over_budget_amount": numeric amount above policy cap for this transaction; use 0 if compliant or no explicit cap applies

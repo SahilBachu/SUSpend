@@ -113,7 +113,7 @@ export default function AuditPage() {
 
   function handleExport() {
     const rows = audit_results.map((r) => ({
-      Type: r.type || r.transaction_id,
+      "Transaction ID": r.transaction_id,
       "Risk Level": r.risk_level,
       Finding: r.finding,
       "Policy Violation": r.policy_violation,
@@ -323,7 +323,7 @@ export default function AuditPage() {
               <thead className="bg-zinc-50">
                 <tr>
                   {[
-                    "Type",
+                    "Transaction ID",
                     "Risk Level",
                     "Finding",
                     "Policy Violation",
@@ -344,8 +344,8 @@ export default function AuditPage() {
                     key={r.transaction_id}
                     className="hover:bg-zinc-50/50 transition-colors"
                   >
-                    <td className="px-4 py-3 text-sm font-medium text-zinc-900 whitespace-nowrap">
-                      {r.type || r.transaction_id}
+                    <td className="px-4 py-3 text-sm font-mono text-zinc-700 whitespace-nowrap">
+                      {r.transaction_id}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <RiskBadge level={r.risk_level} />
