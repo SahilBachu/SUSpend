@@ -76,8 +76,11 @@ CONSTRAINTS:
 def _normalize_transaction(tx: Dict[str, Any]) -> Dict[str, Any]:
     """Ensure transaction has transaction_id for LLM output consistency."""
     out = dict(tx)
-    if "transaction_id" not in out and "purchase_id" in out:
-        out["transaction_id"] = out["purchase_id"]
+    if "transaction_id" not in out:
+        if "purchase_id" in out:
+            out["transaction_id"] = out["purchase_id"]
+        elif "_id" in out:
+            out["transaction_id"] = out["_id"]
     return out
 
 
@@ -193,8 +196,8 @@ def validate_prompt_format(policy_text: str, transactions: List[Dict[str, Any]])
         if "amount" not in tx:
             print("ERROR: Transactions must have amount")
             return False
-        if "transaction_id" not in tx and "purchase_id" not in tx:
-            print("ERROR: Transactions must have transaction_id or purchase_id")
+        if "transaction_id" not in tx and "purchase_id" not in tx and "_id" not in tx:
+            print("ERROR: Transactions must have transaction_id, purchase_id, or _id")
             return False
 
     return True
@@ -232,3 +235,62 @@ def build_complete_audit_prompt(
         user_prompt = build_user_prompt(policy_text, transactions)
 
     return system_prompt, user_prompt, AUDIT_RESPONSE_SCHEMA
+
+
+# ---------------------------------------------------------------------------
+# Email generation prompt (uses audit response from POST /audit/run)
+# ---------------------------------------------------------------------------
+
+EMAIL_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "email_subject": {"type": "string"},
+        "email_body": {"type": "string"},
+    },
+    "required": ["email_subject", "email_body"],
+}
+
+
+def build_email_system_prompt() -> str:
+    """System prompt for generating an audit summary email to the employee."""
+    return """You are a professional corporate compliance officer writing an email to an employee about their expense audit results.
+
+TASK:
+Write a clear, professional email that:
+1. Greets the employee by name.
+2. Summarizes their transactions and the audit outcome.
+3. Lists SUSPICIOUS transactions (high or medium risk) with brief explanations of what was flagged and why.
+4. Lists VALID transactions (low risk) with brief confirmations.
+5. Ends with next steps or a call to action if there are issues, or a simple closing if all is clear.
+
+TONE: Professional, respectful, and direct. Not accusatory. Help the employee understand what was found.
+
+OUTPUT: Return a JSON object with exactly:
+- "email_subject": A short, professional subject line (e.g. "Expense Audit Results - Action Required" or "Expense Audit Summary").
+- "email_body": The full email body as plain text. Use line breaks for readability. No HTML."""
+
+
+def build_email_user_prompt(
+    employee_name: str,
+    audit_results: list[dict],
+    summary: str,
+) -> str:
+    """
+    Build the user prompt for email generation from the audit response.
+
+    Args:
+        employee_name: Name of the employee (for salutation).
+        audit_results: Array from audit endpoint (transaction_id, risk_level, finding, policy_violation, recommendation).
+        summary: Audit summary string from audit endpoint.
+
+    Returns:
+        User prompt for Ollama.
+    """
+    audit_json = json.dumps(audit_results, indent=2)
+    return f"""AUDIT SUMMARY:
+{summary}
+
+AUDIT RESULTS (each transaction with risk level and finding):
+{audit_json}
+
+Generate an email to {employee_name} summarizing these audit results. Separate suspicious (high/medium risk) from valid (low risk) transactions and explain each clearly. Return only valid JSON with email_subject and email_body."""
