@@ -86,13 +86,29 @@ export default function PolicyViewer() {
             </p>
 
             {Object.entries(policies).map(([role, policyData]) => (
-              <div
+              <details
                 key={role}
-                className="bg-amber-50 rounded-xl p-5 border border-amber-100 shadow-sm mt-4"
+                className="bg-amber-50 rounded-xl p-5 border border-amber-100 shadow-sm mt-4 group"
               >
-                <h4 className="text-amber-800 font-semibold mb-3 border-b border-amber-200/60 pb-2 flex items-center gap-2">
+                <summary className="text-amber-800 font-semibold cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between outline-none">
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    {policyData.title}
+                  </div>
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5 transition-transform group-open:-rotate-180"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -101,15 +117,14 @@ export default function PolicyViewer() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                  {policyData.title}
-                </h4>
-                <div className="text-amber-900/80 text-sm whitespace-pre-wrap leading-relaxed">
+                </summary>
+                <div className="text-amber-900/80 text-sm whitespace-pre-wrap leading-relaxed pt-3 mt-3 border-t border-amber-200/60">
                   {policyData.policy}
                 </div>
-              </div>
+              </details>
             ))}
 
             <div className="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
