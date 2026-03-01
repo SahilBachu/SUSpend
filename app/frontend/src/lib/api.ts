@@ -31,8 +31,8 @@
  *   Check if Ollama (LLM) is available.
  *   Returns: { status, ollama_running, model }
  */
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
+const BASE_URL ="http://localhost:5000";
+ //const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface Employee {

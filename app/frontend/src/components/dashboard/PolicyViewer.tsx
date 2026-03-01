@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { api, PolicyRole } from "@/lib/api";
 
-export default function PolicyViewer() {
+interface PolicyViewerProps {
+  selectedRole?: string | null;
+  onSelectPolicy?: (role: string, policyText: string) => void;
+}
+
+export default function PolicyViewer({
+  selectedRole = null,
+  onSelectPolicy,
+}: PolicyViewerProps) {
   const [policies, setPolicies] = useState<{
     [key: string]: PolicyRole;
   } | null>(null);
@@ -79,6 +87,33 @@ export default function PolicyViewer() {
 
         {!loading && !error && policies && (
           <div className="space-y-6">
+            <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+              <p className="text-sm font-medium text-indigo-900 mb-3">
+                Select policy for audit (required):
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(policies).map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => onSelectPolicy?.(role, policies[role].policy)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedRole === role
+                        ? "bg-indigo-600 text-white"
+                        : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50"
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+              {selectedRole && (
+                <p className="text-xs text-indigo-600 mt-2">
+                  Using {policies[selectedRole].title} for audits
+                </p>
+              )}
+            </div>
+
             <p className="leading-relaxed text-base">
               Employees are expected to exercise good judgment and discretion
               when incurring business expenses. Policies vary based on the
@@ -86,13 +121,29 @@ export default function PolicyViewer() {
             </p>
 
             {Object.entries(policies).map(([role, policyData]) => (
-              <div
+              <details
                 key={role}
-                className="bg-amber-50 rounded-xl p-5 border border-amber-100 shadow-sm mt-4"
+                className="bg-amber-50 rounded-xl p-5 border border-amber-100 shadow-sm mt-4 group"
               >
-                <h4 className="text-amber-800 font-semibold mb-3 border-b border-amber-200/60 pb-2 flex items-center gap-2">
+                <summary className="text-amber-800 font-semibold cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between outline-none">
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    {policyData.title}
+                  </div>
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5 transition-transform group-open:-rotate-180"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -101,15 +152,14 @@ export default function PolicyViewer() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                  {policyData.title}
-                </h4>
-                <div className="text-amber-900/80 text-sm whitespace-pre-wrap leading-relaxed">
+                </summary>
+                <div className="text-amber-900/80 text-sm whitespace-pre-wrap leading-relaxed pt-3 mt-3 border-t border-amber-200/60">
                   {policyData.policy}
                 </div>
-              </div>
+              </details>
             ))}
 
             <div className="mt-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
