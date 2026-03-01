@@ -14,7 +14,9 @@ export default function EmployeeAuditSearch({
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Employee[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null,
+  );
   const [isSearching, setIsSearching] = useState(false);
   const [isAuditing, setIsAuditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +34,9 @@ export default function EmployeeAuditSearch({
       setSearchResults(employees);
     } catch (err: any) {
       console.error("Failed to search customers", err);
-      setError(err.message || "Failed to search for employees. Please try again.");
+      setError(
+        err.message || "Failed to search for employees. Please try again.",
+      );
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -77,7 +81,7 @@ export default function EmployeeAuditSearch({
   };
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col">
+    <section className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden flex flex-col h-full">
       <div className="px-6 py-5 border-b border-zinc-100 bg-zinc-50/50">
         <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2">
           <svg
@@ -96,7 +100,7 @@ export default function EmployeeAuditSearch({
           Audit Employee
         </h3>
       </div>
-      <div className="p-6 flex-grow flex flex-col">
+      <div className="p-6 flex-grow flex flex-col min-h-0">
         <form onSubmit={handleSearch} className="mb-6 relative">
           <label htmlFor="search" className="sr-only">
             Search users
@@ -168,7 +172,7 @@ export default function EmployeeAuditSearch({
         </form>
 
         {/* Results Area */}
-        <div className="flex-grow flex flex-col">
+        <div className="flex-grow flex flex-col min-h-0">
           {error && (
             <div className="mb-4 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 flex items-start gap-3">
               <svg
@@ -203,7 +207,7 @@ export default function EmployeeAuditSearch({
             )}
           </div>
 
-          <div className="flex-grow border border-zinc-200 rounded-xl overflow-hidden bg-white max-h-[250px] overflow-y-auto">
+          <div className="border border-zinc-200 rounded-xl bg-white flex-1 min-h-0 overflow-y-auto w-full">
             {searchResults.length === 0 && !isSearching ? (
               <div className="h-full flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
                 <div className="w-12 h-12 bg-zinc-50 rounded-full flex items-center justify-center mb-3 border border-zinc-100">
@@ -306,8 +310,19 @@ export default function EmployeeAuditSearch({
                   fill="none"
                   viewBox="0 0 24 24"
                 >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
                 Running Audit…
               </>
