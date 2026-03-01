@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { UserDTO } from "@/types/user";
-import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { api, Employee } from "@/lib/api";
 
 export default function EmployeeAuditSearch() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<UserDTO[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<Employee[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isAuditing, setIsAuditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -16,24 +18,15 @@ export default function EmployeeAuditSearch() {
     if (!searchQuery.trim()) return;
 
     setIsSearching(true);
-    setSelectedUserId(null); // Reset selection
+    setSelectedEmployee(null);
     setError(null);
 
     try {
       const { employees } = await api.searchCustomers(searchQuery);
-      setSearchResults(
-        employees.map((emp) => ({
-          id: emp.customer_id,
-          name: emp.name,
-          email: `${emp.name.split(" ")[0].toLowerCase()}@example.com`,
-          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`,
-        })),
-      );
+      setSearchResults(employees);
     } catch (err: any) {
       console.error("Failed to search customers", err);
-      setError(
-        err.message || "Failed to search for employees. Please try again.",
-      );
+      setError(err.message || "Failed to search for employees. Please try again.");
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -42,24 +35,35 @@ export default function EmployeeAuditSearch() {
 
   const fetchAllUsers = async () => {
     setIsSearching(true);
-    setSelectedUserId(null);
+    setSelectedEmployee(null);
     setError(null);
     try {
       const { employees } = await api.getCustomers();
-      setSearchResults(
-        employees.map((emp) => ({
-          id: emp.customer_id,
-          name: emp.name,
-          email: `${emp.name.split(" ")[0].toLowerCase()}@example.com`,
-          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`,
-        })),
-      );
+      setSearchResults(employees);
     } catch (err: any) {
       console.error("Failed to fetch all customers", err);
       setError(err.message || "Failed to fetch employees. Please try again.");
       setSearchResults([]);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleBeginAudit = async () => {
+    if (!selectedEmployee) return;
+    setIsAuditing(true);
+    setError(null);
+    try {
+      const response = await api.runAudit({ customer_id: selectedEmployee.customer_id });
+      sessionStorage.setItem(
+        "audit_results",
+        JSON.stringify({ ...response, employee_name: selectedEmployee.name }),
+      );
+      router.push("/dashboard/audit");
+    } catch (err: any) {
+      console.error("Audit failed", err);
+      setError(err.message || "Audit failed. Please try again.");
+      setIsAuditing(false);
     }
   };
 
@@ -217,34 +221,34 @@ export default function EmployeeAuditSearch() {
               </div>
             ) : (
               <ul className="divide-y divide-zinc-100">
-                {searchResults.map((user) => (
-                  <li key={user.id}>
+                {searchResults.map((emp) => (
+                  <li key={emp.customer_id}>
                     <button
-                      onClick={() => setSelectedUserId(user.id)}
+                      onClick={() => setSelectedEmployee(emp)}
                       className={`w-full text-left px-5 py-3.5 flex items-center space-x-4 hover:bg-zinc-50 transition-colors ${
-                        selectedUserId === user.id
+                        selectedEmployee?.customer_id === emp.customer_id
                           ? "bg-indigo-50/60 hover:bg-indigo-50/80 ring-1 ring-inset ring-indigo-200"
                           : ""
                       }`}
                     >
                       <img
-                        src={user.avatarUrl!}
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`}
                         alt=""
                         className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200"
                       />
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`text-sm font-medium truncate ${selectedUserId === user.id ? "text-indigo-900" : "text-zinc-900"}`}
+                          className={`text-sm font-medium truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-900" : "text-zinc-900"}`}
                         >
-                          {user.name}
+                          {emp.name}
                         </p>
                         <p
-                          className={`text-xs truncate ${selectedUserId === user.id ? "text-indigo-600" : "text-zinc-500"}`}
+                          className={`text-xs truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-600" : "text-zinc-500"}`}
                         >
-                          {user.email}
+                          ID: {emp.customer_id}
                         </p>
                       </div>
-                      {selectedUserId === user.id && (
+                      {selectedEmployee?.customer_id === emp.customer_id && (
                         <svg
                           className="w-5 h-5 text-indigo-600 flex-shrink-0"
                           viewBox="0 0 20 20"
@@ -268,10 +272,10 @@ export default function EmployeeAuditSearch() {
         {/* Action Area */}
         <div className="mt-8 pt-5 border-t border-zinc-100 flex items-center justify-between">
           <div className="text-sm text-zinc-500">
-            {selectedUserId ? (
+            {selectedEmployee ? (
               <span className="flex items-center text-indigo-600">
                 <span className="w-2 h-2 rounded-full bg-indigo-600 mr-2"></span>
-                1 employee selected
+                {selectedEmployee.name} selected
               </span>
             ) : (
               "Select an employee to continue"
@@ -279,23 +283,41 @@ export default function EmployeeAuditSearch() {
           </div>
           <button
             type="button"
-            disabled={!selectedUserId}
+            disabled={!selectedEmployee || isAuditing}
+            onClick={handleBeginAudit}
             className="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:border-zinc-200 disabled:cursor-not-allowed transition-all"
           >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-              />
-            </svg>
-            Begin Audit
+            {isAuditing ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Running Audit…
+              </>
+            ) : (
+              <>
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  />
+                </svg>
+                Begin Audit
+              </>
+            )}
           </button>
         </div>
       </div>
