@@ -1,0 +1,5 @@
+{
+  "username": "jdoe",
+  "policy_text": "No entertainment expenses above $500. Travel above $200 requires prior approval.",
+  "nessie_endpoint_url": "http://localhost:8000/api/transactions"
+}
