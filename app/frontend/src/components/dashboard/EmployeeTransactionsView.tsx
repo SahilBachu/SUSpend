@@ -161,6 +161,13 @@ export default function EmployeeTransactionsView({
             {transactions.map((tx, idx) => (
               <div key={idx} className="flex flex-col">
                 <div className="p-6 flex items-center justify-between hover:bg-zinc-50 transition-colors dark:hover:bg-zinc-800/60">
+                  {(() => {
+                    const rawDescription = tx.description || "Credit Card Transaction";
+                    const cleanDescription = rawDescription
+                      .replace(/\s*\[valid\]\s*/gi, " ")
+                      .replace(/\s+/g, " ")
+                      .trim();
+                    return (
                     <div className="flex items-center space-x-4">
                       <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold dark:bg-indigo-900/40 dark:text-indigo-300">
                         {tx.description
@@ -169,13 +176,15 @@ export default function EmployeeTransactionsView({
                       </div>
                       <div>
                         <h3 className="text-sm font-semibold text-zinc-900 max-w-xs truncate dark:text-zinc-100">
-                          {tx.description || "Credit Card Transaction"}
+                          {cleanDescription || "Credit Card Transaction"}
                         </h3>
                         <p className="text-xs text-zinc-500 mt-1 dark:text-zinc-400">
                           {tx.purchase_date}
                         </p>
                       </div>
                     </div>
+                    );
+                  })()}
 
                     <div className="text-right flex items-center space-x-4">
                       <div>
