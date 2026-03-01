@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +23,54 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  .login-container {
+    @apply flex bg-[#1B264F] px-4 py-12 sm:px-6 lg:px-8 items-center justify-center min-h-[calc(100vh-4rem)];
+  }
+
+  .login-card {
+    @apply w-full max-w-md space-y-8 rounded-2xl bg-[#F5F3F5] p-8 shadow-2xl ring-1 ring-[#576CA8]/20 transition-all;
+  }
+
+  .login-icon-wrap {
+    @apply mx-auto h-12 w-12 rounded-full bg-[#576CA8]/20 flex items-center justify-center;
+  }
+
+  .login-icon {
+    @apply w-6 h-6 text-[#576CA8];
+  }
+
+  .login-title {
+    @apply mt-6 text-3xl font-extrabold tracking-tight text-[#1B264F];
+  }
+
+  .login-subtitle {
+    @apply mt-2 text-sm text-[#576CA8];
+  }
+
+  .login-label {
+    @apply block text-sm font-medium text-[#1B264F];
+  }
+
+  .login-input {
+    @apply block w-full appearance-none rounded-lg border border-[#576CA8]/30 px-3 py-2 text-[#1B264F] placeholder-[#576CA8]/60 focus:border-[#576CA8] focus:outline-none focus:ring-[#576CA8] sm:text-sm transition-colors bg-white;
+  }
+
+  .login-checkbox {
+    @apply h-4 w-4 rounded border-[#576CA8]/30 text-[#576CA8] focus:ring-[#576CA8];
+  }
+
+  .login-link {
+    @apply font-medium text-[#576CA8] hover:text-[#1B264F] transition-colors;
+  }
+
+  .login-link-bold {
+    @apply font-semibold text-[#709775] hover:text-[#415D43] transition-colors;
+  }
+
+  .btn-primary {
+    @apply relative flex w-full justify-center rounded-lg border border-transparent bg-[#709775] px-4 py-2 text-sm font-medium text-[#F5F3F5] hover:bg-[#415D43] focus:outline-none focus:ring-2 focus:ring-[#709775] focus:ring-offset-2 disabled:opacity-70 transition-all duration-200 shadow-md hover:shadow-lg focus:ring-offset-[#F5F3F5];
+  }
 }
