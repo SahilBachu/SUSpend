@@ -4,13 +4,17 @@
       "id": 1,
       "username": "admin",
       "password": "password123",
-      "role": "admin"
+      "role": "admin",
+      "firstName": "Hitha",
+      "lastName": "Rayachoti"
     },
     {
       "id": 2,
       "username": "react_user",
       "password": "safe_password",
-      "role": "employee"
+      "role": "employee",
+      "firstName": "Sahil",
+      "lastName": "Bachu"
     }
   ]
 }

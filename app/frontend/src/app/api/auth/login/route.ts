@@ -18,7 +18,14 @@ export async function POST(request: NextRequest) {
     const dbPath = path.join(process.cwd(), "..", "..", "db.json");
     const raw = fs.readFileSync(dbPath, "utf-8");
     const db = JSON.parse(raw) as {
-      users: { id: number; username: string; password: string; role: string }[];
+      users: {
+        id: number;
+        username: string;
+        password: string;
+        role: string;
+        firstName?: string;
+        lastName?: string;
+      }[];
     };
 
     const user = db.users?.find(
@@ -37,6 +44,8 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       username: user.username,
       role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
     });
 
     const response = NextResponse.json({ success: true, role: user.role });
