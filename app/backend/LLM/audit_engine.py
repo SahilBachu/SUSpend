@@ -127,6 +127,72 @@ def run_audit(
     return report
 
 
+def run_audit_with_transactions(
+    transactions: list[dict],
+    policy_text: str,
+    fraud_focus: bool = True,
+) -> AuditReport:
+    """
+    Run an LLM audit on pre-fetched transactions (no HTTP call to Nessie).
+
+    Use this when the caller already holds the transaction list — e.g. the
+    Flask API that fetches transactions itself before calling the LLM.
+
+    Args:
+        transactions: List of transaction dicts (must each have an id field).
+        policy_text:  Plain-text spending policy to enforce.
+        fraud_focus:  If True, use the fraud-detection prompt variant.
+
+    Returns:
+        A validated AuditReport containing findings and a summary.
+
+    Raises:
+        ValueError:     Empty transaction list, invalid data, or bad LLM output.
+        ConnectionError: Ollama server unreachable.
+    """
+    logger.info(
+        "run_audit_with_transactions | txn_count=%d | fraud_focus=%s",
+        len(transactions),
+        fraud_focus,
+    )
+
+    if not transactions:
+        raise ValueError("No transactions provided. Cannot run audit.")
+
+    # ------------------------------------------------------------------
+    # Step 2 — Build prompts (step 1 already done by caller)
+    # ------------------------------------------------------------------
+    logger.info("run_audit_with_transactions | building prompts")
+    system_prompt, user_prompt, schema = build_complete_audit_prompt(
+        policy_text, transactions, fraud_focus=fraud_focus
+    )
+
+    # ------------------------------------------------------------------
+    # Step 3 — Call the LLM
+    # ------------------------------------------------------------------
+    logger.info("run_audit_with_transactions | calling LLM")
+    try:
+        raw_response = call_llama(system_prompt, user_prompt, schema)
+    except OllamaConnectionError as exc:
+        logger.error("Ollama connection failed: %s", exc)
+        raise ConnectionError(str(exc)) from exc
+    except OllamaGenerationError as exc:
+        logger.error("Ollama generation error: %s", exc)
+        raise ValueError(f"LLM generation failed: {exc}") from exc
+
+    # ------------------------------------------------------------------
+    # Step 4 — Validate response
+    # ------------------------------------------------------------------
+    logger.info("run_audit_with_transactions | validating LLM response")
+    report = validate_llm_response(raw_response)
+    logger.info(
+        "run_audit_with_transactions | complete | results=%d",
+        len(report.audit_results),
+    )
+
+    return report
+
+
 # ---------------------------------------------------------------------------
 # Example / quick self-test
 # ---------------------------------------------------------------------------
