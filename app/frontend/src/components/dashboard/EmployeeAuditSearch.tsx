@@ -207,78 +207,80 @@ export default function EmployeeAuditSearch({
             )}
           </div>
 
-          <div className="border border-zinc-200 rounded-xl bg-white flex-1 min-h-0 overflow-y-auto w-full">
-            {searchResults.length === 0 && !isSearching ? (
-              <div className="h-full flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
-                <div className="w-12 h-12 bg-zinc-50 rounded-full flex items-center justify-center mb-3 border border-zinc-100">
-                  <svg
-                    className="w-6 h-6 text-zinc-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="text-zinc-500 text-sm">
-                  Enter a name or click Fetch All to find employees to audit.
-                </p>
-                <p className="text-zinc-400 text-xs mt-1">
-                  Try searching for "John" or "Sarah"
-                </p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-zinc-100">
-                {searchResults.map((emp) => (
-                  <li key={emp.customer_id}>
-                    <button
-                      onClick={() => setSelectedEmployee(emp)}
-                      className={`w-full text-left px-5 py-3.5 flex items-center space-x-4 hover:bg-zinc-50 transition-colors ${
-                        selectedEmployee?.customer_id === emp.customer_id
-                          ? "bg-indigo-50/60 hover:bg-indigo-50/80 ring-1 ring-inset ring-indigo-200"
-                          : ""
-                      }`}
+          <div className="relative flex-1 min-h-0">
+            <div className="absolute inset-0 border border-zinc-200 rounded-xl bg-white overflow-y-auto w-full">
+              {searchResults.length === 0 && !isSearching ? (
+                <div className="h-full flex flex-col items-center justify-center p-8 text-center min-h-[200px]">
+                  <div className="w-12 h-12 bg-zinc-50 rounded-full flex items-center justify-center mb-3 border border-zinc-100">
+                    <svg
+                      className="w-6 h-6 text-zinc-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      <img
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`}
-                        alt=""
-                        className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                       />
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className={`text-sm font-medium truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-900" : "text-zinc-900"}`}
-                        >
-                          {emp.name}
-                        </p>
-                        <p
-                          className={`text-xs truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-600" : "text-zinc-500"}`}
-                        >
-                          ID: {emp.customer_id}
-                        </p>
-                      </div>
-                      {selectedEmployee?.customer_id === emp.customer_id && (
-                        <svg
-                          className="w-5 h-5 text-indigo-600 flex-shrink-0"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+                    </svg>
+                  </div>
+                  <p className="text-zinc-500 text-sm">
+                    Enter a name or click Fetch All to find employees to audit.
+                  </p>
+                  <p className="text-zinc-400 text-xs mt-1">
+                    Try searching for "John" or "Sarah"
+                  </p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-zinc-100">
+                  {searchResults.map((emp) => (
+                    <li key={emp.customer_id}>
+                      <button
+                        onClick={() => setSelectedEmployee(emp)}
+                        className={`w-full text-left px-5 py-3.5 flex items-center space-x-4 hover:bg-zinc-50 transition-colors ${
+                          selectedEmployee?.customer_id === emp.customer_id
+                            ? "bg-indigo-50/60 hover:bg-indigo-50/80 ring-1 ring-inset ring-indigo-200"
+                            : ""
+                        }`}
+                      >
+                        <img
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.name}`}
+                          alt=""
+                          className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className={`text-sm font-medium truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-900" : "text-zinc-900"}`}
+                          >
+                            {emp.name}
+                          </p>
+                          <p
+                            className={`text-xs truncate ${selectedEmployee?.customer_id === emp.customer_id ? "text-indigo-600" : "text-zinc-500"}`}
+                          >
+                            ID: {emp.customer_id}
+                          </p>
+                        </div>
+                        {selectedEmployee?.customer_id === emp.customer_id && (
+                          <svg
+                            className="w-5 h-5 text-indigo-600 flex-shrink-0"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
 
