@@ -1,5 +1,38 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
 
+/**
+ * SUSpend API Client
+ *
+ * Centralized client for all backend API calls. Base URL defaults to
+ * http://localhost:5000 (override via NEXT_PUBLIC_API_BASE_URL).
+ *
+ * ── Summary of Functions ─────────────────────────────────────────────────
+ *
+ * getCustomers(name?)
+ *   List all employees/customers. Optional exact name filter.
+ *   Returns: { count, employees: [{ customer_id, name }] }
+ *
+ * searchCustomers(query)
+ *   Search employees by partial name match.
+ *   Returns: { query, count, employees: [{ customer_id, name }] }
+ *
+ * getPolicy(role?)
+ *   Fetch expense policies. Omit role for all; pass "Associate"|"Manager"|"VP" for one.
+ *   Returns: Full policies object OR single { title, policy } if role specified
+ *
+ * runAudit({ customer_id, policy_text?, fraud_focus? })
+ *   Run LLM audit on employee transactions.
+ *   Returns: { status, customer_id, audit_results, summary, high_risk_count, medium_risk_count, low_risk_count }
+ *
+ * generateEmail({ employee_name, audit_results, summary })
+ *   Generate audit summary email. Pass data from runAudit response.
+ *   Returns: { email_subject, email_body }
+ *
+ * getAuditHealth()
+ *   Check if Ollama (LLM) is available.
+ *   Returns: { status, ollama_running, model }
+ */
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000";
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface Employee {
